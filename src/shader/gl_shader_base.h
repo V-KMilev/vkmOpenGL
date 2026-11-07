@@ -1,5 +1,6 @@
 #pragma once
 
+#include <array>
 #include <cstdint>
 #include <deque>
 #include <string>
@@ -109,6 +110,7 @@ class ShaderBase : public GLObject {
 
         // Uniform setters, on this program whether it is bound or not. The cache is content-hashed;
         // any source of the name works (string literal, std::string::c_str(), runtime-constructed).
+        // A value the location holds already is not sent again.
         void setUniform4f(const char* uniformName, float f0, float f1, float f2, float f3) const;
         void setUniform3f(const char* uniformName, float f0, float f1, float f2) const;
         void setUniform2f(const char* uniformName, float f0, float f1) const;
@@ -209,6 +211,12 @@ class ShaderBase : public GLObject {
         int32_t getUniformLocation(const char* name) const;
 
     private:
+        /// What a setter last sent a location: a driver call is far dearer than comparing the bytes.
+        struct SentValue {
+            std::array<uint32_t, 16> words{};  ///< Room for a mat4.
+            uint32_t                 bytes = 0;  ///< 0 is not known, as after a link or zeroUniforms().
+        };
+
         /// A uniform zeroUniforms() sets.
         struct PlainUniform {
             int32_t  location = -1;
@@ -248,6 +256,16 @@ class ShaderBase : public GLObject {
         int32_t resolveUniform(const char* name, bool warnIfMissing) const;
 
         /**
+         * @brief Where to send @p bytes of @p value for @p name, unless its location holds them already.
+         *
+         * @param name  Uniform name, resolved as getUniformLocation() does.
+         * @param value What a setter is about to send.
+         * @param bytes Its size, at most a mat4's.
+         * @return The location, now holding @p value; -1 when there is none or nothing changed.
+         */
+        int32_t locationToChange(const char* name, const void* value, uint32_t bytes) const;
+
+        /**
          * @brief Delete the GL program and zero m_id.
          *
          * Idempotent, so it is safe on a moved-from shader or after a previous
@@ -264,6 +282,9 @@ class ShaderBase : public GLObject {
 
         /// Name -> location, keyed by view so a literal hashes without allocating.
         mutable std::unordered_map<std::string_view, int32_t> m_uniformLocationCache;
+
+        /// By location: what each holds, as far as the setters know.
+        mutable std::vector<SentValue> m_sent;
 
         // What zeroUniforms() sets, listed on first use after a link, and zeros for the largest.
         mutable std::vector<PlainUniform> m_plain;
