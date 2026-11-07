@@ -8,6 +8,7 @@
 
 #include "gl_error_handle.h"
 #include "gl_object.h"
+#include "gl_texture.h"  // bindTextureUnit, deleteTextures
 
 namespace Vkm::GL {
 
@@ -87,12 +88,12 @@ class MipChainTexture : public GLObject {
 
         /// Bind the whole chain for sampling (the shader selects a level via textureLod).
         void bindSlot(uint32_t slot) const {
-            VKM_GL_CHECK(glBindTextureUnit(slot, m_id));
+            bindTextureUnit(slot, m_id);
         }
 
         /// Bind one level alone for sampling; the shader reads it as level 0.
         void bindLevel(int mip, uint32_t slot) const {
-            VKM_GL_CHECK(glBindTextureUnit(slot, m_levels[static_cast<size_t>(mip)]));
+            bindTextureUnit(slot, m_levels[static_cast<size_t>(mip)]);
         }
 
         /**
@@ -121,11 +122,11 @@ class MipChainTexture : public GLObject {
 
         void release() noexcept {
             if (!m_levels.empty()) {
-                VKM_GL_CHECK(glDeleteTextures(static_cast<GLsizei>(m_levels.size()), m_levels.data()));
+                deleteTextures(static_cast<GLsizei>(m_levels.size()), m_levels.data());
                 m_levels.clear();
             }
             if (m_id == 0) return;
-            VKM_GL_CHECK(glDeleteTextures(1, &m_id));
+            deleteTextures(1, &m_id);
             m_id = 0;
         }
 

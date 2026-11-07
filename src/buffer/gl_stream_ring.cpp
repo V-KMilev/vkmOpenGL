@@ -43,11 +43,11 @@ StreamRing::~StreamRing() {
 
 void StreamRing::release() noexcept {
     for (Fence& fence : m_fences) fence = Fence{};
-    for (const Retired& retired : m_retired) VKM_GL_CHECK(glDeleteBuffers(1, &retired.buffer));
+    for (const Retired& retired : m_retired) deleteBuffer(retired.buffer);
     m_retired.clear();
     if (m_buffer == 0) return;
     VKM_GL_CHECK(glUnmapNamedBuffer(m_buffer));
-    VKM_GL_CHECK(glDeleteBuffers(1, &m_buffer));
+    deleteBuffer(m_buffer);
     m_buffer = 0;
     m_mapped = nullptr;
 }
@@ -80,7 +80,7 @@ void StreamRing::open() {
     // The frame that last read a retired buffer is now done when FRAMES frames have ended since.
     const auto done = [this](const Retired& retired) { return retired.frame + FRAMES <= m_frame; };
     for (const Retired& retired : m_retired) {
-        if (done(retired)) VKM_GL_CHECK(glDeleteBuffers(1, &retired.buffer));
+        if (done(retired)) deleteBuffer(retired.buffer);
     }
     m_retired.erase(std::remove_if(m_retired.begin(), m_retired.end(), done), m_retired.end());
 
@@ -111,7 +111,7 @@ void StreamRing::grow(uint32_t bytes) {
 }
 
 DeviceStream::~DeviceStream() {
-    if (m_buffer != 0) VKM_GL_CHECK(glDeleteBuffers(1, &m_buffer));
+    deleteBuffer(m_buffer);
 }
 
 BufferSpan DeviceStream::upload(StreamRing& ring, const void* data, uint32_t bytes) {
@@ -122,7 +122,7 @@ BufferSpan DeviceStream::upload(StreamRing& ring, const void* data, uint32_t byt
     }
     if (bytes > m_capacity) {
         // Half again, so a scene that grows a little each frame reallocates rarely.
-        if (m_buffer != 0) VKM_GL_CHECK(glDeleteBuffers(1, &m_buffer));
+        deleteBuffer(m_buffer);
         m_capacity = bytes + bytes / 2;
         VKM_GL_CHECK(glCreateBuffers(1, &m_buffer));
         VKM_GL_CHECK(glNamedBufferStorage(m_buffer, m_capacity, nullptr, 0));
@@ -140,7 +140,7 @@ void DeviceStream::resize(uint32_t bytes) {
         VKM_GL_CHECK(glCreateBuffers(1, &grown));
         VKM_GL_CHECK(glNamedBufferStorage(grown, capacity, nullptr, 0));
         if (m_bytes > 0) VKM_GL_CHECK(glCopyNamedBufferSubData(m_buffer, grown, 0, 0, m_bytes));
-        if (m_buffer != 0) VKM_GL_CHECK(glDeleteBuffers(1, &m_buffer));
+        deleteBuffer(m_buffer);
         m_buffer   = grown;
         m_capacity = capacity;
     }

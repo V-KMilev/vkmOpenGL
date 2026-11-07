@@ -8,6 +8,7 @@
 
 #include "gl_error_handle.h"
 #include "gl_object.h"
+#include "gl_texture.h"  // bindTextureUnit, deleteTextures
 
 namespace Vkm::GL {
 
@@ -72,7 +73,7 @@ class TextureCubeArray : public GLObject {
         }
 
         void bindSlot(uint32_t slot) const {
-            VKM_GL_CHECK(glBindTextureUnit(slot, m_id));
+            bindTextureUnit(slot, m_id);
         }
 
         /**
@@ -111,7 +112,7 @@ class TextureCubeArray : public GLObject {
     private:
         void release() noexcept {
             if (m_id == 0) return;
-            VKM_GL_CHECK(glDeleteTextures(1, &m_id));
+            deleteTextures(1, &m_id);
             m_id = 0;
         }
 

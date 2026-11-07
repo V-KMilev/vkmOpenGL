@@ -9,6 +9,13 @@
 
 namespace Vkm::GL {
 
+namespace {
+
+// One context, drawn from one thread: the array bound as vkmGL last bound it.
+GLuint g_boundArray = 0;
+
+} // namespace
+
 VertexArray::VertexArray() : GLObject(0, GL_VERTEX_ARRAY, 0) {
     VKM_GL_CHECK(glCreateVertexArrays(1, &m_id));
     VKM_ASSERT(m_id != 0);
@@ -22,6 +29,7 @@ VertexArray& VertexArray::operator=(VertexArray && other) noexcept {
     if (this != &other) {
         release();
         GLObject::operator=(std::move(other));
+        m_feeds = other.m_feeds;
     }
     return *this;
 }
@@ -29,15 +37,20 @@ VertexArray& VertexArray::operator=(VertexArray && other) noexcept {
 void VertexArray::release() noexcept {
     if (m_id == 0) return;
     VKM_GL_CHECK(glDeleteVertexArrays(1, &m_id));
+    // The driver binds none in place of a deleted array.
+    if (g_boundArray == m_id) g_boundArray = 0;
     m_id = 0;
 }
 
 void VertexArray::bind() const {
+    if (g_boundArray == m_id) return;
     VKM_GL_CHECK(glBindVertexArray(m_id));
+    g_boundArray = m_id;
 }
 
 void VertexArray::unbind() const {
     VKM_GL_CHECK(glBindVertexArray(0));
+    g_boundArray = 0;
 }
 
 namespace {
@@ -115,6 +128,15 @@ void VertexArray::setVertexBuffer(
 }
 
 void VertexArray::setVertexBuffer(uint32_t binding, const BufferSpan& span, uint32_t stride) {
+    if (binding < REMEMBERED_FEEDS) {
+        Feed& feed = m_feeds[binding];
+        const uint64_t deleted = deletedBuffers();
+        if (feed.set && feed.buffer == span.buffer && feed.offset == span.offset && feed.stride == stride
+            && feed.deleted == deleted) {
+            return;
+        }
+        feed = Feed{span.buffer, span.offset, stride, deleted, true};
+    }
     const auto at   = static_cast<GLintptr>(span.offset);
     const auto step = static_cast<GLsizei>(stride);
     VKM_GL_CHECK(glVertexArrayVertexBuffer(m_id, binding, span.buffer, at, step));
@@ -136,7 +158,7 @@ void VertexArray::drawElementsBaseVertex(
 }
 
 void VertexArray::multiDrawElementsIndirect(GLenum mode, const BufferSpan& commands, uint32_t count) const {
-    VKM_GL_CHECK(glBindBuffer(GL_DRAW_INDIRECT_BUFFER, commands.buffer));
+    bindIndirect(commands.buffer);
     const auto* at = reinterpret_cast<const void*>(uintptr_t{commands.offset});
     VKM_GL_CHECK(glMultiDrawElementsIndirect(mode, GL_UNSIGNED_INT, at, static_cast<GLsizei>(count), 0));
 }

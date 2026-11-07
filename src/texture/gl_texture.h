@@ -166,6 +166,25 @@ Texture2DParams renderTargetParams(
 
 
 /**
+ * @brief Bind @p texture to sampler unit @p unit, unless it is bound there already.
+ *
+ * Every vkmGL texture binds a unit through here, and deletes through deleteTextures(), so what
+ * each unit holds is known: a draw that binds again what is bound costs the driver all the same.
+ *
+ * @param unit    The unit a shader's sampler names.
+ * @param texture The texture, of any target.
+ */
+void bindTextureUnit(uint32_t unit, GLuint texture);
+
+/**
+ * @brief Delete @p count textures, and forget them on every unit they were bound to.
+ *
+ * @param count    How many.
+ * @param textures Their names; 0 is none.
+ */
+void deleteTextures(GLsizei count, const GLuint* textures);
+
+/**
  * @brief A 2D OpenGL texture object with immutable storage: sample it, set parameters, fill levels.
  *
  * Every edit goes through direct state access, so none disturbs what is bound. The storage is

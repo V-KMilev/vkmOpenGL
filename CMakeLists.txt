@@ -38,7 +38,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 
 # Warnings are on for our own sources only - the submodules under modules/ keep
 # their own level. The set matches the engine's vkm_warnings so a file reads the
-# same on either side of the boundary, per docs/guides/code-style.md.
+# same on either side of the boundary.
 set(_vkm_gl_warnings
 	-Wall
 	-Wextra

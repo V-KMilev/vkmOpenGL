@@ -6,6 +6,7 @@
 #include "gl_shader_reload.h"
 
 #include <algorithm>
+#include <cstring>
 #include <filesystem>
 #include <stdexcept>
 #include <utility>
@@ -41,6 +42,7 @@ ShaderBase::ShaderBase(ShaderBase && other) noexcept
     , m_path(std::move(other.m_path))
     , m_uniformNames(std::move(other.m_uniformNames))
     , m_uniformLocationCache(std::move(other.m_uniformLocationCache))
+    , m_sent(std::move(other.m_sent))
     , m_plain(std::move(other.m_plain))
     , m_plainListed(std::exchange(other.m_plainListed, false))
     , m_zeros(std::move(other.m_zeros))
@@ -65,6 +67,7 @@ ShaderBase& ShaderBase::operator=(ShaderBase && other) noexcept {
         // move preserves element addresses, keeping the view keys valid.
         m_uniformNames         = std::move(other.m_uniformNames);
         m_uniformLocationCache = std::move(other.m_uniformLocationCache);
+        m_sent                 = std::move(other.m_sent);
         m_plain                = std::move(other.m_plain);
         m_plainListed          = std::exchange(other.m_plainListed, false);
         m_zeros                = std::move(other.m_zeros);
@@ -159,6 +162,7 @@ bool ShaderBase::tryRecompile() {
     }
     m_uniformLocationCache.clear();
     m_uniformNames.clear();
+    m_sent.clear();
     m_plainListed = false;
     return true;
 }
@@ -328,6 +332,7 @@ void ShaderBase::listPlainUniforms() const {
 
 void ShaderBase::zeroUniforms() const {
     if (!m_plainListed) listPlainUniforms();
+    m_sent.clear();
 
     const GLfloat* zeros = m_zeros.data();
     const auto*    ints  = reinterpret_cast<const GLint*>(m_intZeros.data());
@@ -371,95 +376,85 @@ int32_t ShaderBase::getUniformLocation(const char* name) const {
     return resolveUniform(name, /*warnIfMissing=*/true);
 }
 
+int32_t ShaderBase::locationToChange(const char* name, const void* value, uint32_t bytes) const {
+    const int32_t location = getUniformLocation(name);
+    if (location < 0) return -1;
+    const auto at = static_cast<size_t>(location);
+    if (at >= m_sent.size()) m_sent.resize(at + 1);
+    SentValue& sent = m_sent[at];
+    if (sent.bytes == bytes && std::memcmp(sent.words.data(), value, bytes) == 0) return -1;
+    std::memcpy(sent.words.data(), value, bytes);
+    sent.bytes = bytes;
+    return location;
+}
+
 void ShaderBase::setUniform4f(const char* uniformName, float f0, float f1, float f2, float f3) const {
-    const int32_t location = getUniformLocation(uniformName);
-    if (location != -1) {
-        VKM_GL_CHECK(glProgramUniform4f(m_id, location, f0, f1, f2, f3));
-    }
+    const float values[] = {f0, f1, f2, f3};
+    const int32_t location = locationToChange(uniformName, &values, sizeof(values));
+    if (location != -1) VKM_GL_CHECK(glProgramUniform4f(m_id, location, f0, f1, f2, f3));
 }
 
 void ShaderBase::setUniform3f(const char* uniformName, float f0, float f1, float f2) const {
-    const int32_t location = getUniformLocation(uniformName);
-    if (location != -1) {
-        VKM_GL_CHECK(glProgramUniform3f(m_id, location, f0, f1, f2));
-    }
+    const float values[] = {f0, f1, f2};
+    const int32_t location = locationToChange(uniformName, &values, sizeof(values));
+    if (location != -1) VKM_GL_CHECK(glProgramUniform3f(m_id, location, f0, f1, f2));
 }
 
 void ShaderBase::setUniform2f(const char* uniformName, float f0, float f1) const {
-    const int32_t location = getUniformLocation(uniformName);
-    if (location != -1) {
-        VKM_GL_CHECK(glProgramUniform2f(m_id, location, f0, f1));
-    }
+    const float values[] = {f0, f1};
+    const int32_t location = locationToChange(uniformName, &values, sizeof(values));
+    if (location != -1) VKM_GL_CHECK(glProgramUniform2f(m_id, location, f0, f1));
 }
 
 void ShaderBase::setUniform1f(const char* uniformName, float f0) const {
-    const int32_t location = getUniformLocation(uniformName);
-    if (location != -1) {
-        VKM_GL_CHECK(glProgramUniform1f(m_id, location, f0));
-    }
+    const int32_t location = locationToChange(uniformName, &f0, sizeof(f0));
+    if (location != -1) VKM_GL_CHECK(glProgramUniform1f(m_id, location, f0));
 }
 
 void ShaderBase::setUniform4fv(const char* uniformName, const glm::vec4& v) const {
-    const int32_t location = getUniformLocation(uniformName);
-    if (location != -1) {
-        VKM_GL_CHECK(glProgramUniform4fv(m_id, location, 1, &v[0]));
-    }
+    const int32_t location = locationToChange(uniformName, &v, sizeof(v));
+    if (location != -1) VKM_GL_CHECK(glProgramUniform4fv(m_id, location, 1, &v[0]));
 }
 
 void ShaderBase::setUniform3fv(const char* uniformName, const glm::vec3& v) const {
-    const int32_t location = getUniformLocation(uniformName);
-    if (location != -1) {
-        VKM_GL_CHECK(glProgramUniform3fv(m_id, location, 1, &v[0]));
-    }
+    const int32_t location = locationToChange(uniformName, &v, sizeof(v));
+    if (location != -1) VKM_GL_CHECK(glProgramUniform3fv(m_id, location, 1, &v[0]));
 }
 
 void ShaderBase::setUniform2i(const char* uniformName, int32_t i0, int32_t i1) const {
-    const int32_t location = getUniformLocation(uniformName);
-    if (location != -1) {
-        VKM_GL_CHECK(glProgramUniform2i(m_id, location, i0, i1));
-    }
+    const int32_t values[] = {i0, i1};
+    const int32_t location = locationToChange(uniformName, &values, sizeof(values));
+    if (location != -1) VKM_GL_CHECK(glProgramUniform2i(m_id, location, i0, i1));
 }
 
 void ShaderBase::setUniform2fv(const char* uniformName, const glm::vec2& v) const {
-    const int32_t location = getUniformLocation(uniformName);
-    if (location != -1) {
-        VKM_GL_CHECK(glProgramUniform2fv(m_id, location, 1, &v[0]));
-    }
+    const int32_t location = locationToChange(uniformName, &v, sizeof(v));
+    if (location != -1) VKM_GL_CHECK(glProgramUniform2fv(m_id, location, 1, &v[0]));
 }
 
 void ShaderBase::setUniformMatrix4fv(const char* uniformName, const glm::mat4& matrix) const {
-    const int32_t location = getUniformLocation(uniformName);
-    if (location != -1) {
-        VKM_GL_CHECK(glProgramUniformMatrix4fv(m_id, location, 1, GL_FALSE, &matrix[0][0]));
-    }
+    const int32_t location = locationToChange(uniformName, &matrix, sizeof(matrix));
+    if (location != -1) VKM_GL_CHECK(glProgramUniformMatrix4fv(m_id, location, 1, GL_FALSE, &matrix[0][0]));
 }
 
 void ShaderBase::setUniformMatrix3fv(const char* uniformName, const glm::mat3& matrix) const {
-    const int32_t location = getUniformLocation(uniformName);
-    if (location != -1) {
-        VKM_GL_CHECK(glProgramUniformMatrix3fv(m_id, location, 1, GL_FALSE, &matrix[0][0]));
-    }
+    const int32_t location = locationToChange(uniformName, &matrix, sizeof(matrix));
+    if (location != -1) VKM_GL_CHECK(glProgramUniformMatrix3fv(m_id, location, 1, GL_FALSE, &matrix[0][0]));
 }
 
 void ShaderBase::setUniform1ui(const char* uniformName, uint32_t ui0) const {
-    const int32_t location = getUniformLocation(uniformName);
-    if (location != -1) {
-        VKM_GL_CHECK(glProgramUniform1ui(m_id, location, ui0));
-    }
+    const int32_t location = locationToChange(uniformName, &ui0, sizeof(ui0));
+    if (location != -1) VKM_GL_CHECK(glProgramUniform1ui(m_id, location, ui0));
 }
 
 void ShaderBase::setUniform1i(const char* uniformName, int32_t i0) const {
-    const int32_t location = getUniformLocation(uniformName);
-    if (location != -1) {
-        VKM_GL_CHECK(glProgramUniform1i(m_id, location, i0));
-    }
+    const int32_t location = locationToChange(uniformName, &i0, sizeof(i0));
+    if (location != -1) VKM_GL_CHECK(glProgramUniform1i(m_id, location, i0));
 }
 
 void ShaderBase::setUniform3iv(const char* uniformName, const glm::ivec3& v) const {
-    const int32_t location = getUniformLocation(uniformName);
-    if (location != -1) {
-        VKM_GL_CHECK(glProgramUniform3iv(m_id, location, 1, &v[0]));
-    }
+    const int32_t location = locationToChange(uniformName, &v, sizeof(v));
+    if (location != -1) VKM_GL_CHECK(glProgramUniform3iv(m_id, location, 1, &v[0]));
 }
 
 } // namespace Vkm::GL

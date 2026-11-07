@@ -85,16 +85,16 @@ Texture2DArray& Texture2DArray::operator=(Texture2DArray && other) noexcept {
 
 void Texture2DArray::release() noexcept {
     if (m_view != 0) {
-        VKM_GL_CHECK(glDeleteTextures(1, &m_view));
+        deleteTextures(1, &m_view);
         m_view = 0;
     }
     if (m_id == 0) return;
-    VKM_GL_CHECK(glDeleteTextures(1, &m_id));
+    deleteTextures(1, &m_id);
     m_id = 0;
 }
 
 void Texture2DArray::bindSlot(uint32_t slot) const {
-    VKM_GL_CHECK(glBindTextureUnit(slot, m_view != 0 ? m_view : m_id));
+    bindTextureUnit(slot, m_view != 0 ? m_view : m_id);
 }
 
 void Texture2DArray::bindImage(uint32_t unit, GLenum access, uint32_t level) const {

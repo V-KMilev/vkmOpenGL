@@ -7,8 +7,34 @@
 
 namespace Vkm::GL {
 
+namespace {
+
+// One context, drawn from one thread: the indirect binding as vkmGL last made it.
+GLuint   g_indirect       = 0;
+uint64_t g_deletedBuffers = 0;
+
+} // namespace
+
 void bindRange(GLenum target, uint32_t binding, const BufferSpan& span) {
     VKM_GL_CHECK(glBindBufferRange(target, binding, span.buffer, span.offset, span.bytes));
+}
+
+void bindIndirect(GLuint buffer) {
+    if (buffer == g_indirect) return;
+    VKM_GL_CHECK(glBindBuffer(GL_DRAW_INDIRECT_BUFFER, buffer));
+    g_indirect = buffer;
+}
+
+void deleteBuffer(GLuint buffer) {
+    if (buffer == 0) return;
+    VKM_GL_CHECK(glDeleteBuffers(1, &buffer));
+    // The driver unbinds a deleted buffer from where it was bound.
+    if (buffer == g_indirect) g_indirect = 0;
+    ++g_deletedBuffers;
+}
+
+uint64_t deletedBuffers() {
+    return g_deletedBuffers;
 }
 
 GLBuffer::GLBuffer(
@@ -40,8 +66,7 @@ GLBuffer& GLBuffer::operator=(GLBuffer && other) noexcept {
 }
 
 void GLBuffer::release() noexcept {
-    if (m_id == 0) return;
-    VKM_GL_CHECK(glDeleteBuffers(1, &m_id));
+    deleteBuffer(m_id);
     m_id = 0;
 }
 
@@ -49,11 +74,21 @@ void GLBuffer::bind(GLenum target) const {
     // The override is what lets one buffer serve two roles - storage a compute
     // stage writes and, say, the indirect commands a draw reads. Ignoring it
     // silently bound to the wrong target and left the intended one empty.
-    VKM_GL_CHECK(glBindBuffer(target == GL_NONE ? m_target : target, m_id));
+    const GLenum to = target == GL_NONE ? m_target : target;
+    if (to == GL_DRAW_INDIRECT_BUFFER) {
+        bindIndirect(m_id);
+        return;
+    }
+    VKM_GL_CHECK(glBindBuffer(to, m_id));
 }
 
 void GLBuffer::unbind(GLenum target) const {
-    VKM_GL_CHECK(glBindBuffer(target == GL_NONE ? m_target : target, 0));
+    const GLenum to = target == GL_NONE ? m_target : target;
+    if (to == GL_DRAW_INDIRECT_BUFFER) {
+        bindIndirect(0);
+        return;
+    }
+    VKM_GL_CHECK(glBindBuffer(to, 0));
 }
 
 uint32_t GLBuffer::getSize() const {

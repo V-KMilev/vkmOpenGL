@@ -32,6 +32,28 @@ struct BufferSpan {
 void bindRange(GLenum target, uint32_t binding, const BufferSpan& span);
 
 /**
+ * @brief Bind @p buffer as the draw-indirect buffer, unless it is bound there already.
+ *
+ * A draw that binds again what is bound costs the driver a revalidation all the same.
+ *
+ * @param buffer The buffer the commands lie in; 0 binds none.
+ */
+void bindIndirect(GLuint buffer);
+
+/**
+ * @brief Delete @p buffer, and forget it wherever vkmGL remembers a binding to it.
+ *
+ * The one way vkmGL deletes a buffer: the driver hands a deleted name out again, and a binding
+ * remembered by that name (bindIndirect, VertexArray::setVertexBuffer) would read as made.
+ *
+ * @param buffer The buffer; 0 is none.
+ */
+void deleteBuffer(GLuint buffer);
+
+/// How many buffers deleteBuffer() has deleted; a binding remembered at another count is made again.
+uint64_t deletedBuffers();
+
+/**
  * @brief A buffer mapped into client address space, unmapped on destruction.
  *
  * Obtained from GLBuffer::map() / mapRange(), never constructed directly. Move
