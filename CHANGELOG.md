@@ -2,6 +2,21 @@
 
 Notable changes to vkmGL, newest first. Each release is tagged `vX.Y.Z`.
 
+## 1.1.2
+
+What a frame binds or sets again as it already is goes no further than vkmGL: the driver pays for
+it all the same.
+
+- **`VertexArray`** remembers the array bound and what each of its bindings was fed, and
+  **`bindIndirect()`** the draw-indirect buffer. Every buffer vkmGL deletes goes through
+  **`deleteBuffer()`**, which forgets it wherever a binding to it is remembered.
+- **`bindTextureUnit()`** remembers what each sampler unit holds, and **`deleteTextures()`**
+  forgets a deleted texture on every unit. Every vkmGL texture binds and deletes through them.
+- **The uniform setters** remember what each location holds and send only a change; a link and
+  `zeroUniforms()` forget it.
+
+All of it holds while vkmGL alone binds, or what binds behind it puts the last binding back.
+
 ## 1.1.1
 
 A host checks its programs one at a time, so no frame waits on them all.
