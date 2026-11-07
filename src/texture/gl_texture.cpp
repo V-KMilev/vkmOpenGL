@@ -11,6 +11,33 @@
 
 namespace Vkm::GL {
 
+namespace {
+
+// One context, drawn from one thread: what each sampler unit holds as vkmGL last bound it. GL
+// guarantees 80 units; one past them is bound every time.
+constexpr GLuint REMEMBERED_UNITS = 80;
+std::array<GLuint, REMEMBERED_UNITS> g_units{};
+
+} // namespace
+
+void bindTextureUnit(uint32_t unit, GLuint texture) {
+    if (unit < REMEMBERED_UNITS) {
+        if (g_units[unit] == texture) return;
+        g_units[unit] = texture;
+    }
+    VKM_GL_CHECK(glBindTextureUnit(unit, texture));
+}
+
+void deleteTextures(GLsizei count, const GLuint* textures) {
+    VKM_GL_CHECK(glDeleteTextures(count, textures));
+    // The driver unbinds a deleted texture from every unit.
+    for (GLsizei i = 0; i < count; ++i) {
+        for (GLuint& held : g_units) {
+            if (held == textures[i]) held = 0;
+        }
+    }
+}
+
 Texture2DParams renderTargetParams(
     uint32_t width,
     uint32_t height,
@@ -152,7 +179,7 @@ Texture2D& Texture2D::operator=(Texture2D && other) noexcept {
 
 void Texture2D::release() noexcept {
     if (m_id == 0) return;
-    VKM_GL_CHECK(glDeleteTextures(1, &m_id));
+    deleteTextures(1, &m_id);
     m_id = 0;
 }
 
@@ -193,7 +220,7 @@ void Texture2D::allocate() {
 }
 
 void Texture2D::bindSlot(uint32_t slot) const {
-    VKM_GL_CHECK(glBindTextureUnit(slot, m_id));
+    bindTextureUnit(slot, m_id);
 }
 
 void Texture2D::bindImage(uint32_t unit, GLenum access, uint32_t level) const {

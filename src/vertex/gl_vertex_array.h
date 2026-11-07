@@ -4,6 +4,7 @@
 #include "gl_buffer.h"  // BufferSpan
 #include "gl_vertex_buffer_layout.h"
 #include "gl_vertex_buffer.h"
+#include <array>
 #include <cstdint>
 
 namespace Vkm::GL {
@@ -22,6 +23,10 @@ enum class AttributeKind {
  *
  * Manages vertex attribute state and binding of vertex/index buffers. Provides
  * helpers to add buffers with layouts and configure instancing divisors.
+ *
+ * A bind or a buffer fed as it already is goes no further: the driver revalidates a draw's state
+ * after either, whatever it was before. So the bound array and each array's feeds are remembered,
+ * which holds while vkmGL alone binds arrays, or what binds one puts the last back.
  */
 class VertexArray : public GLObject {
     public:
@@ -187,6 +192,19 @@ class VertexArray : public GLObject {
         void multiDrawArrays(GLenum mode, const int32_t* firsts, const int32_t* counts, int32_t draws) const;
 
     private:
+        /// What a binding was last fed from, as setVertexBuffer() set it.
+        struct Feed {
+            GLuint   buffer  = 0;
+            uint32_t offset  = 0;
+            uint32_t stride  = 0;
+            uint64_t deleted = 0;      ///< deletedBuffers() then: a name since freed may be another buffer.
+            bool     set     = false;
+        };
+
+        /// GL guarantees at least this many bindings; a higher one is fed every time.
+        static constexpr uint32_t REMEMBERED_FEEDS = 16;
+
+    private:
         /**
          * @brief Delete the VAO and zero m_id.
          *
@@ -194,6 +212,9 @@ class VertexArray : public GLObject {
          * release().
          */
         void release() noexcept;
+
+    private:
+        std::array<Feed, REMEMBERED_FEEDS> m_feeds{};
 };
 
 } // namespace Vkm::GL

@@ -47,12 +47,12 @@ Texture3D& Texture3D::operator=(Texture3D && other) noexcept {
 
 void Texture3D::release() noexcept {
     if (m_id == 0) return;
-    VKM_GL_CHECK(glDeleteTextures(1, &m_id));
+    deleteTextures(1, &m_id);
     m_id = 0;
 }
 
 void Texture3D::bindSlot(uint32_t slot) const {
-    VKM_GL_CHECK(glBindTextureUnit(slot, m_id));
+    bindTextureUnit(slot, m_id);
 }
 
 void Texture3D::bindImage(uint32_t unit, GLenum access, int32_t level) const {
