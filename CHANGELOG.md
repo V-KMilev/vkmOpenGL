@@ -2,6 +2,14 @@
 
 Notable changes to vkmGL, newest first. Each release is tagged `vX.Y.Z`.
 
+## 1.1.3
+
+A layer of an array copies over another's with no framebuffer between them.
+
+- **`Texture2DArray::copyLayer()`** copies one layer of one level from another array of the same
+  size and format, with no framebuffer: an array first attached to one may be laid out again
+  whole on the spot, which held the CPU for 0.4 to 0.8 s.
+
 ## 1.1.2
 
 What a frame binds or sets again as it already is goes no further than vkmGL: the driver pays for
