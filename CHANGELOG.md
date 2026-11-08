@@ -2,6 +2,15 @@
 
 Notable changes to vkmGL, newest first. Each release is tagged `vX.Y.Z`.
 
+## 1.1.4
+
+A driver compiles programs on two threads of its own, no longer on all it offers.
+
+- **`ShaderBase::compileInParallel()`** asks for two compiler threads. With every thread it offered,
+  one driver corrupted the heap on a start that found some programs in its disk cache and compiled
+  others anew, nearly every time; at two, none in 46 such starts, for about half a second more on a
+  start with nothing cached.
+
 ## 1.1.3
 
 A layer of an array copies over another's with no framebuffer between them.
