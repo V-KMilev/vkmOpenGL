@@ -44,7 +44,7 @@ class ShaderBase : public GLObject {
 
     public:
         /**
-         * @brief Let the driver compile and link programs on threads of its own, if it can.
+         * @brief Let the driver compile and link programs on two threads of its own, if it can.
          *
          * Called once the context is current, before the programs it should speed. A program
          * built while it is on is handed to the driver and checked at its first use, which waits

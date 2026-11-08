@@ -94,11 +94,14 @@ namespace {
 /// Whether compileInParallel() found the driver's threads.
 bool g_parallel = false;
 
+/// The driver's threads compileInParallel() asks for. With more, a driver measured corrupted the heap
+/// when a start found some programs in its disk cache and compiled several anew.
+constexpr GLuint COMPILER_THREADS = 2;
+
 } // namespace
 
 bool ShaderBase::compileInParallel(bool on) {
-    // Any count past the driver's own maximum asks for that maximum; none, for no threads.
-    const GLuint threads = on ? 0xFFFFFFFFu : 0u;
+    const GLuint threads = on ? COMPILER_THREADS : 0u;
     if (GLEW_KHR_parallel_shader_compile) {
         VKM_GL_CHECK(glMaxShaderCompilerThreadsKHR(threads));
         g_parallel = on;
