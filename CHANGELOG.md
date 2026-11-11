@@ -2,6 +2,15 @@
 
 Notable changes to vkmGL, newest first. Each release is tagged `vX.Y.Z`.
 
+## 1.1.5
+
+A program's variant is a list of defines, not a folder of its own.
+
+- **`Shader(path, defines)`** and **`preprocessShaderSource(path, defines)`** declare each name with
+  `#define` in every stage, after the prelude, so one folder of stages makes every variant of a
+  program. A reload declares them again, and the program's label is the folder's name with each
+  define after a `+`.
+
 ## 1.1.4
 
 A driver compiles programs on two threads of its own, no longer on all it offers.
