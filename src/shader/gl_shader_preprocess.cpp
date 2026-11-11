@@ -87,11 +87,14 @@ void setShaderPrelude(int glslVersion_, std::string constants) {
     preludeConstants() = std::move(constants);
 }
 
-std::string preprocessShaderSource(const std::string& filePath) {
+std::string preprocessShaderSource(const std::string& filePath, const std::vector<std::string>& defines) {
     std::unordered_set<std::string> visited;
+    std::string variant;
+    for (const std::string& name : defines) variant += "#define " + name + "\n";
     // #version must be the first line, and #included files never carry one.
     return "#version " + std::to_string(glslVersion()) + " core\n"
          + preludeConstants()
+         + variant
          + resolveIncludes(fs::path(filePath), visited);
 }
 

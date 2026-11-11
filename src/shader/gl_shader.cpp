@@ -22,11 +22,12 @@ GraphicsShaderSource::GraphicsShaderSource()
     , fragmentShader()
     , geometryShader() {}
 
-GraphicsShaderSource::GraphicsShaderSource(const std::string& path)
+GraphicsShaderSource::GraphicsShaderSource(const std::string& path, std::vector<std::string> defines_)
     : m_path(path)
     , vertexShader()
     , fragmentShader()
-    , geometryShader() {
+    , geometryShader()
+    , defines(std::move(defines_)) {
     const std::string vertexShaderName = (fs::path(m_path) / "vertex.shader").string();
     const std::string fragmentShaderName = (fs::path(m_path) / "fragment.shader").string();
     std::string geometryShaderName = (fs::path(m_path) / "geometry.shader").string();
@@ -40,11 +41,11 @@ GraphicsShaderSource::GraphicsShaderSource(const std::string& path)
     }
 
     // Resolve #include directives as each stage is loaded.
-    vertexShader = preprocessShaderSource(vertexShaderName);
-    fragmentShader = preprocessShaderSource(fragmentShaderName);
+    vertexShader   = preprocessShaderSource(vertexShaderName, defines);
+    fragmentShader = preprocessShaderSource(fragmentShaderName, defines);
 
     if (!geometryShaderName.empty()) {
-        geometryShader = preprocessShaderSource(geometryShaderName);
+        geometryShader = preprocessShaderSource(geometryShaderName, defines);
     }
 }
 
@@ -80,9 +81,11 @@ bool GraphicsShaderSource::validatePaths(
     return true;
 }
 
-Shader::Shader(const std::string& path)
+Shader::Shader(const std::string& path, std::vector<std::string> defines)
     : ShaderBase(path)
-    , m_source(path) {
+    , m_source(path, std::move(defines)) {
+    // One directory makes each variant, so a label names the defines too.
+    for (const std::string& name : m_source.defines) m_name += "+" + name;
     createProgram();
 }
 
@@ -96,7 +99,7 @@ void Shader::reloadSource() {
     // Re-read from disk. Subclasses that bypass the path-based source (e.g.
     // engine-side preprocessors that resolve #include) override this to
     // re-run their own loader instead.
-    m_source = GraphicsShaderSource(m_path);
+    m_source = GraphicsShaderSource(m_path, m_source.defines);
 }
 
 void Shader::createProgram() {
