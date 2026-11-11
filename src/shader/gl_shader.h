@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <string>
+#include <vector>
 
 #include "gl_shader_base.h"
 
@@ -18,15 +19,18 @@ struct GraphicsShaderSource {
     ~GraphicsShaderSource() = default;
 
     /**
-     * @brief Load shader source files from a directory, resolving `#include`.
+     * @brief Load shader source files from a directory, resolving `#include` and declaring @p defines.
      *
      * Reads vertex.shader, fragment.shader, and optionally geometry.shader,
      * running each through preprocessShaderSource so `#include "rel.glsl"`
      * directives are inlined (relative to the including file). A stage with no
-     * #include is read verbatim. For other preprocessing (e.g. injecting variant
-     * #defines) construct the struct directly with prepared source strings.
+     * #include is read verbatim but for the prelude and @p defines. For other
+     * preprocessing construct the struct directly with prepared source strings.
+     *
+     * @param path    The directory the stages are in.
+     * @param defines Declared at the top of every stage: which variant of the program this is.
      */
-    explicit GraphicsShaderSource(const std::string& path);
+    explicit GraphicsShaderSource(const std::string& path, std::vector<std::string> defines = {});
 
     /**
      * @brief Direct construction with already-prepared source strings.
@@ -63,10 +67,11 @@ struct GraphicsShaderSource {
         std::string& geometryShaderName
     );
 
-    std::string m_path;           ///< Path to the containing directory of shader files
-    std::string vertexShader;     ///< Source code for vertex shader
-    std::string fragmentShader;   ///< Source code for fragment shader
-    std::string geometryShader;   ///< Source code for geometry shader (optional)
+    std::string              m_path;          ///< Path to the containing directory of shader files
+    std::string              vertexShader;    ///< Source code for vertex shader
+    std::string              fragmentShader;  ///< Source code for fragment shader
+    std::string              geometryShader;  ///< Source code for geometry shader (optional)
+    std::vector<std::string> defines;         ///< Declared in every stage; kept so a reload declares them again
 };
 
 /**
@@ -90,11 +95,13 @@ class Shader : public ShaderBase {
         Shader& operator=(Shader && shader) noexcept = default;
 
         /**
-         * @brief Construct and load graphics shaders from the directory at path.
+         * @brief Construct and load graphics shaders from the directory at path, declaring @p defines.
          * @param path Path to the directory containing vertex.shader, fragment.shader, and optionally geometry.shader.
+         * @param defines Declared in every stage after the prelude, so one directory makes each variant of a
+         *                program; the program's label names them after the directory's.
          * @throws std::runtime_error if shader source validation or compilation fails.
          */
-        explicit Shader(const std::string& path);
+        explicit Shader(const std::string& path, std::vector<std::string> defines = {});
 
         /**
          * @brief Construct from already-prepared source strings.

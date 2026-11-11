@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 namespace Vkm::GL {
 
@@ -30,8 +31,8 @@ constexpr int DEFAULT_GLSL_VERSION = 450;
 void setShaderPrelude(int glslVersion, std::string constants = {});
 
 /**
- * @brief Load a shader stage from disk with `#version` prepended and
- *        `#include "rel.glsl"` directives resolved.
+ * @brief Load a shader stage from disk with `#version` prepended, @p defines
+ *        declared and `#include "rel.glsl"` directives resolved.
  *
  * GLSL has neither natively. Includes are inlined relative to the including
  * file's own directory and are cycle-safe; the directive itself is preserved as
@@ -42,8 +43,10 @@ void setShaderPrelude(int glslVersion, std::string constants = {});
  * both share include support and one version source of truth.
  *
  * @param filePath Path to the shader stage file on disk.
+ * @param defines  Names declared by `#define` after the prelude, in order: so
+ *                 one stage serves each variant of a program.
  * @return The stage source, ready to compile.
  */
-std::string preprocessShaderSource(const std::string& filePath);
+std::string preprocessShaderSource(const std::string& filePath, const std::vector<std::string>& defines = {});
 
 } // namespace Vkm::GL
