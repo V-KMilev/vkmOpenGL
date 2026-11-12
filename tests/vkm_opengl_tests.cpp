@@ -1,7 +1,7 @@
 // The vkm_opengl test suite. Deliberately covers only what runs without a GL context:
-// vertex layout arithmetic, the shader preprocessor and the error check's shape.
-// Anything needing a live context belongs in a rendering test, not here - this
-// binary must stay runnable on a build machine with no GPU.
+// vertex layout arithmetic, the shader preprocessor, the error check's shape and a load
+// with no context. Anything needing a live context belongs in a rendering test, not
+// here - this binary must stay runnable on a build machine with no GPU.
 
 #include <cstdio>
 #include <filesystem>
@@ -11,6 +11,7 @@
 #include "vkm_log/logger.h"
 
 #include "vkm_opengl/core/error_handle.h"
+#include "vkm_opengl/core/load.h"
 #include "vkm_opengl/core/version.h"
 #include "vkm_opengl/shader/shader_preprocess.h"
 #include "vkm_opengl/vertex/vertex_buffer_layout.h"
@@ -159,6 +160,15 @@ void testErrorCheck() {
     check("binds to the branch it is written under", calls == 1);
 }
 
+void testLoad() {
+    std::printf("load():\n");
+
+    // No context is current here: refused, with the reason, and no throw.
+    const Vkm::OpenGL::Loaded loaded = Vkm::OpenGL::load();
+    check("with no current context, it answers no", !loaded.ok);
+    check("and says why", !loaded.reason.empty());
+}
+
 } // namespace
 
 int main() {
@@ -175,6 +185,7 @@ int main() {
     testVertexBufferLayout();
     testShaderPreprocessor(dir);
     testErrorCheck();
+    testLoad();
 
     fs::remove_all(dir);
 

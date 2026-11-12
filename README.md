@@ -16,7 +16,8 @@ Add it as a submodule and `add_subdirectory` it. It links OpenGL, glew, glm and
 `vkm_log`, and vendors only glew: the consuming project adds the `glm` and
 `vkm_log` targets first, as it uses them itself, and the build stops with the
 reason when one is missing. It needs no window library: the consumer makes a
-context current and initializes glew before the first call.
+context current, from a window or from EGL, and calls `Vkm::OpenGL::load()`
+before the first call; it answers whether OpenGL loaded and why not.
 
 ```
 git submodule add https://github.com/V-KMilev/vkmOpenGL.git modules/vkmOpenGL
