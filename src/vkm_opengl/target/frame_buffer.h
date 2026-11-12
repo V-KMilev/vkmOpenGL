@@ -108,7 +108,7 @@ class FrameBuffer : public Object {
         /**
          * @brief Clear the depth attachment to @p depth, whatever is bound.
          *
-         * Depth writes must be on (Context::setDepthWrite): a clear honours the mask.
+         * Depth writes must be on (Context::setDepthWrite): a clear honors the mask.
          *
          * @param depth The value cleared to.
          */

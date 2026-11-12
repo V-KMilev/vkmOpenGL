@@ -17,7 +17,7 @@ namespace Vkm::OpenGL {
  * Deliberately declares no bind()/unbind(). Nothing in the codebase holds a
  * Object by pointer or reference, so a virtual here dispatched nothing while
  * obliging every subclass to supply the same signature - which four of six
- * could not honour: a program, a VAO and a renderbuffer have no target to
+ * could not honor: a program, a VAO and a renderbuffer have no target to
  * select, and a sampler binds to a texture unit rather than a target at all.
  * Each subclass declares the binding call that suits it instead.
  */
@@ -60,7 +60,7 @@ class Object {
         void setLabel(const char* label);
 
     protected:
-        // Declared in constructor-parameter order: initialising out of that
+        // Declared in constructor-parameter order: initializing out of that
         // order is what the members are read in regardless, and -Wreorder
         // flags the mismatch.
         GLenum   m_target;

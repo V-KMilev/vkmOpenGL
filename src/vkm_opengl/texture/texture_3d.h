@@ -75,7 +75,7 @@ class Texture3D : public Object {
         /**
          * @brief Read the whole volume back into @p pixels.
          *
-         * A synchronising read - the offline half of the same transfer as
+         * A synchronizing read - the offline half of the same transfer as
          * upload(), for a bake that finishes its work on the CPU. Not for
          * anything inside a frame.
          *

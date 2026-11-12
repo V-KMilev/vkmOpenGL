@@ -18,7 +18,7 @@ namespace Vkm::OpenGL {
 namespace {
 
 // Mutable process-wide state behind an accessor, matching how shader_reload
-// holds its registry: a function-local static initialises on first use and
+// holds its registry: a function-local static initializes on first use and
 // needs no ordering guarantee against other translation units.
 int& glslVersion() {
     static int version = DEFAULT_GLSL_VERSION;
