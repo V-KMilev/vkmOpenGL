@@ -41,7 +41,7 @@ Neither debug feature follows `NDEBUG`: a consumer that sets no flag gets a libr
 | `core`    | `Context` (state cache, limits, barriers), `Object`, `VKM_OPENGL_CHECK`, debug output, the version it needs |
 | `buffer`  | `Buffer` and its vertex, index, uniform and storage kinds; `StreamRing`, `Fence`, `ReadbackBuffer` |
 | `vertex`  | `VertexArray` (attribute formats, bindings, draws), `VertexBufferLayout`                |
-| `texture` | `Texture2D`, `Texture2DArray`, `Texture3D`, `TextureCube`, `TextureCubeArray`, `MipChainTexture`, `Sampler` |
+| `texture` | `Texture2D`, `Texture2DArray`, `Texture3D`, `TextureCube`, `TextureCubeArray`, `MipChainTexture`, `Sampler`; the cube's faces in GL's order (`CUBE_FACES`, `cubeFaceView`) |
 | `target`  | `FrameBuffer`, `RenderBuffer`                                                           |
 | `shader`  | `Shader`, `ComputeShader`, the source preprocessor, parallel compiling, hot reload      |
 

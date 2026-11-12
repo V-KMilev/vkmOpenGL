@@ -1,12 +1,14 @@
 // The vkm_opengl test suite. Deliberately covers only what runs without a GL context:
-// vertex layout arithmetic, the shader preprocessor, the error check's shape and a load
-// with no context. Anything needing a live context belongs in a rendering test, not
-// here - this binary must stay runnable on a build machine with no GPU.
+// vertex layout arithmetic, the shader preprocessor, the error check's shape, a load with
+// no context and the cube's faces. Anything needing a live context belongs in a rendering
+// test, not here - this binary must stay runnable on a build machine with no GPU.
 
 #include <cstdio>
 #include <filesystem>
 #include <fstream>
 #include <string>
+
+#include <glm/glm.hpp>
 
 #include "vkm_log/logger.h"
 
@@ -14,6 +16,7 @@
 #include "vkm_opengl/core/load.h"
 #include "vkm_opengl/core/version.h"
 #include "vkm_opengl/shader/shader_preprocess.h"
+#include "vkm_opengl/texture/cube_faces.h"
 #include "vkm_opengl/vertex/vertex_buffer_layout.h"
 
 namespace fs = std::filesystem;
@@ -169,6 +172,36 @@ void testLoad() {
     check("and says why", !loaded.reason.empty());
 }
 
+bool alike(const glm::vec3& a, const glm::vec3& b) {
+    return glm::all(glm::lessThan(glm::abs(a - b), glm::vec3(1e-6f)));
+}
+
+void testCubeFaces() {
+    std::printf("Cube faces:\n");
+
+    using Vkm::OpenGL::CUBE_FACES;
+    // GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, and the specification's face-selection table: on face
+    // i, t grows with -ry for the X and Z faces, with +rz on +Y and -rz on -Y.
+    const glm::vec3 dirs[6] = {{1, 0, 0}, {-1, 0, 0}, {0, 1, 0}, {0, -1, 0}, {0, 0, 1}, {0, 0, -1}};
+    const glm::vec3 ups[6]  = {{0, -1, 0}, {0, -1, 0}, {0, 0, 1}, {0, 0, -1}, {0, -1, 0}, {0, -1, 0}};
+    bool order = true;
+    bool basis = true;
+    bool views = true;
+    for (int i = 0; i < 6; ++i) {
+        order = order && CUBE_FACES[i].dir == dirs[i] && CUBE_FACES[i].up == ups[i];
+        basis = basis && glm::dot(CUBE_FACES[i].dir, CUBE_FACES[i].up) == 0.0f
+            && glm::length(CUBE_FACES[i].dir) == 1.0f && glm::length(CUBE_FACES[i].up) == 1.0f;
+        // Seen from an eye off the origin, the face's center lies straight ahead and its up is up.
+        const glm::vec3 eye(2.0f, -3.0f, 5.0f);
+        const glm::mat4 view = Vkm::OpenGL::cubeFaceView(i, eye);
+        views = views && alike(glm::vec3(view * glm::vec4(eye + CUBE_FACES[i].dir, 1.0f)), {0, 0, -1})
+            && alike(glm::vec3(view * glm::vec4(CUBE_FACES[i].up, 0.0f)), {0, 1, 0});
+    }
+    check("six faces in GL's order, each up as the specification's table", order);
+    check("each direction and up a unit axis, at right angles", basis);
+    check("cubeFaceView looks down the face from the eye, its up up", views);
+}
+
 } // namespace
 
 int main() {
@@ -186,6 +219,7 @@ int main() {
     testShaderPreprocessor(dir);
     testErrorCheck();
     testLoad();
+    testCubeFaces();
 
     fs::remove_all(dir);
 
