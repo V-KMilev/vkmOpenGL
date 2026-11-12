@@ -32,20 +32,22 @@ void checkGLError(
  * VKM_OPENGL_CHECK(id = glCreateShader(type));
  * @endcode
  *
- * Release builds (NDEBUG) drop the check but keep the same statement shape, so
- * control flow cannot differ between configurations.
+ * Built without VKM_OPENGL_CHECKS, the check is dropped but the statement keeps
+ * its shape, so control flow cannot differ between configurations. The check
+ * follows that flag alone, never NDEBUG: each one is a round trip to a driver that
+ * may run on a thread of its own.
  *
  * @param GL_CALL The OpenGL call to execute and check.
  */
-#ifdef NDEBUG
-    #define VKM_OPENGL_CHECK(GL_CALL) \
-        do {                          \
-            GL_CALL;                  \
-        } while (0)
-#else
+#ifdef VKM_OPENGL_CHECKS
     #define VKM_OPENGL_CHECK(GL_CALL)                       \
         do {                                                \
             GL_CALL;                                        \
             checkGLError(__FILE__, __LINE__, __FUNCTION__); \
+        } while (0)
+#else
+    #define VKM_OPENGL_CHECK(GL_CALL) \
+        do {                          \
+            GL_CALL;                  \
         } while (0)
 #endif

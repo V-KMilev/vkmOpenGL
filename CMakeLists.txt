@@ -63,6 +63,23 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 	$<INSTALL_INTERFACE:include>
 )
 
+# Debug features follow flags, each off unless the consumer turns it on; neither
+# follows NDEBUG.
+option(VKM_OPENGL_ASSERTS "Keep the library's VKM_ASSERTs on whatever the build type" OFF)
+option(VKM_OPENGL_CHECKS  "Read GL's error queue after every call (VKM_OPENGL_CHECK)" OFF)
+
+# VKM_ASSERT keys on NDEBUG, which a RelWithDebInfo or Release build defines: on,
+# the library's own sources compile without it.
+if(VKM_OPENGL_ASSERTS)
+	target_compile_options(${PROJECT_NAME} PRIVATE $<IF:$<CXX_COMPILER_ID:MSVC>,/UNDEBUG,-UNDEBUG>)
+endif()
+
+# Public: the headers' inline calls are checked too, and every file that expands
+# them must expand them alike.
+if(VKM_OPENGL_CHECKS)
+	target_compile_definitions(${PROJECT_NAME} PUBLIC VKM_OPENGL_CHECKS)
+endif()
+
 # Its log lines say whose they are.
 target_compile_definitions(${PROJECT_NAME} PRIVATE
 	VKM_LOG_SUFFIX="VKM-OPENGL"

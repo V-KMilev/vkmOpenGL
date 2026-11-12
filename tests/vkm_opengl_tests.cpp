@@ -1,7 +1,7 @@
 // The vkm_opengl test suite. Deliberately covers only what runs without a GL context:
-// vertex layout arithmetic and the shader preprocessor. Anything needing a live
-// context belongs in a rendering test, not here - this binary must stay runnable
-// on a build machine with no GPU.
+// vertex layout arithmetic, the shader preprocessor and the error check's shape.
+// Anything needing a live context belongs in a rendering test, not here - this
+// binary must stay runnable on a build machine with no GPU.
 
 #include <cstdio>
 #include <filesystem>
@@ -10,8 +10,9 @@
 
 #include "vkm_log/logger.h"
 
-#include "vkm_opengl/vertex/vertex_buffer_layout.h"
+#include "vkm_opengl/core/error_handle.h"
 #include "vkm_opengl/shader/shader_preprocess.h"
+#include "vkm_opengl/vertex/vertex_buffer_layout.h"
 
 namespace fs = std::filesystem;
 
@@ -141,6 +142,17 @@ void testShaderPreprocessor(const fs::path& dir) {
           missing.find("failed to open") != std::string::npos);
 }
 
+void testErrorCheck() {
+    std::printf("VKM_OPENGL_CHECK:\n");
+
+    // Whether VKM_OPENGL_CHECKS is on or off: the call is the macro's, and runs once.
+    int calls = 0;
+    VKM_OPENGL_CHECK(++calls);
+    check("runs its call exactly once", calls == 1);
+    if (calls == 0) VKM_OPENGL_CHECK(++calls);
+    check("binds to the branch it is written under", calls == 1);
+}
+
 } // namespace
 
 int main() {
@@ -156,6 +168,7 @@ int main() {
 
     testVertexBufferLayout();
     testShaderPreprocessor(dir);
+    testErrorCheck();
 
     fs::remove_all(dir);
 

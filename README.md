@@ -24,9 +24,13 @@ git submodule add https://github.com/V-KMilev/vkmOpenGL.git modules/vkmOpenGL
 The library is `vkm_opengl`, shared. Headers are included by the library's folder:
 `#include "vkm_opengl/texture/texture.h"`; everything is in `Vkm::OpenGL`.
 
-| Option                   | Default | What                                   |
-|--------------------------|---------|----------------------------------------|
-| `VKM_OPENGL_BUILD_TESTS` | `OFF`   | Builds `vkm_opengl_tests`, CTest `vkm_opengl` |
+| Option                   | Default | What                                                                   |
+|--------------------------|---------|------------------------------------------------------------------------|
+| `VKM_OPENGL_ASSERTS`     | `OFF`   | The library's `VKM_ASSERT`s run whatever the build type (`-UNDEBUG` on its own sources) |
+| `VKM_OPENGL_CHECKS`      | `OFF`   | `VKM_OPENGL_CHECK` reads GL's error queue after every call, and stops the program on an error: a stall per call |
+| `VKM_OPENGL_BUILD_TESTS` | `OFF`   | Builds `vkm_opengl_tests`, CTest `vkm_opengl`                          |
+
+Neither debug feature follows `NDEBUG`: a consumer that sets no flag gets a library with neither.
 
 ## What it holds
 
