@@ -9,8 +9,8 @@
 
 #include "gl_error_handle.h"
 #include "gl_shader_preprocess.h"
-#include "l_assert.h"
-#include "logger.h"
+#include "vkm_log/assert.h"
+#include "vkm_log/logger.h"
 
 namespace fs = std::filesystem;
 

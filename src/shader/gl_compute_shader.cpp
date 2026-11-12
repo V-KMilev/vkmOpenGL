@@ -7,8 +7,8 @@
 #include <stdexcept>
 
 #include "gl_error_handle.h"
-#include "l_assert.h"
-#include "logger.h"
+#include "vkm_log/assert.h"
+#include "vkm_log/logger.h"
 
 #include "gl_shader_preprocess.h"
 

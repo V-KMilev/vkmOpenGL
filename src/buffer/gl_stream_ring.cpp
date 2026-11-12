@@ -4,7 +4,7 @@
 #include <cstring>
 
 #include "gl_error_handle.h"
-#include "l_assert.h"
+#include "vkm_log/assert.h"
 
 namespace Vkm::GL {
 

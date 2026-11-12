@@ -8,7 +8,7 @@
 #include <fstream>
 #include <string>
 
-#include "logger.h"
+#include "vkm_log/logger.h"
 
 #include "gl_vertex_buffer_layout.h"
 #include "gl_shader_preprocess.h"
@@ -148,7 +148,7 @@ int main() {
     // so the logger has to exist. ERROR level keeps the expected noise out of
     // the test output.
     const fs::path logPath = fs::temp_directory_path() / "vkm_gl_tests.log";
-    Vkm::Log::Logger::init(logPath.string(), "VKM_GL-TESTS", Vkm::Log::LogLevel::ERROR);
+    Vkm::Log::Logger::init(logPath.string(), "VKM_GL-TESTS", Vkm::Log::Level::Error);
 
     const fs::path dir = fs::temp_directory_path() / "vkm_gl_tests";
     fs::remove_all(dir);

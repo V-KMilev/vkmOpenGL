@@ -5,7 +5,7 @@
 
 #include <cstdlib>
 
-#include "logger.h"
+#include "vkm_log/logger.h"
 
 void checkGLError(
     const char* file,

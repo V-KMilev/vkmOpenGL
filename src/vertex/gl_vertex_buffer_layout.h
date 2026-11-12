@@ -5,7 +5,7 @@
 
 #include <GL/glew.h>
 
-#include "l_assert.h"
+#include "vkm_log/assert.h"
 
 namespace Vkm::GL {
 /**

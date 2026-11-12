@@ -4,8 +4,8 @@
 #include "gl_frame_buffer.h"
 
 #include "gl_error_handle.h"
-#include "l_assert.h"
-#include "logger.h"
+#include "vkm_log/assert.h"
+#include "vkm_log/logger.h"
 
 namespace Vkm::GL {
 
