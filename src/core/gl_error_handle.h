@@ -3,7 +3,7 @@
 #include <GL/glew.h>
 
 /**
- * @brief Drain the OpenGL error queue, logging and aborting if it is not empty.
+ * @brief Drain the OpenGL error queue, logging each error, and stop the program if there was any.
  *
  * GL queues errors rather than holding one, so this loops until the queue is
  * empty and reports every entry - stopping at the first would leave the rest to

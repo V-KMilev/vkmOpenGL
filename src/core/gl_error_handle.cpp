@@ -3,8 +3,7 @@
 
 #include "gl_error_handle.h"
 
-#include <cstdlib>
-
+#include "vkm_log/assert.h"
 #include "vkm_log/logger.h"
 
 void checkGLError(
@@ -27,11 +26,5 @@ void checkGLError(
         failed = true;
     }
 
-    if (!failed) return;
-
-#ifdef _WIN32
-    __debugbreak();
-#else
-    abort();
-#endif
+    if (failed) Vkm::Log::stopProgram();
 }
