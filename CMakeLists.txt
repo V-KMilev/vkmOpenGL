@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.25.0)
 
-set(PROJECT_NAME vkm_gl)
+set(PROJECT_NAME vkm_opengl)
 set(PROJECT_VERSION_MAJOR 1)
 set(PROJECT_VERSION_MINOR 1)
 set(PROJECT_VERSION_PATCH 5)
@@ -16,7 +16,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-message("[VKM_GL] Building vkm_gl v${PROJECT_VERSION}")
+message("[VKM_OPENGL] Building vkm_opengl v${PROJECT_VERSION}")
 
 # Find OpenGL
 find_package(OpenGL REQUIRED)
@@ -37,47 +37,54 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 )
 
 # Warnings are on for our own sources only - the submodules under modules/ keep
-# their own level. The set matches the engine's vkm_warnings so a file reads the
-# same on either side of the boundary.
-set(_vkm_gl_warnings
+# their own level. The set is the engine's, so a file reads the same on either
+# side of the boundary. Clang reads the doc blocks: a @param naming no parameter
+# is an error.
+set(_vkm_opengl_warnings
 	-Wall
 	-Wextra
-	-Wno-unused-value      # VKM_ASSERT expands to `true` in release
 	-Wno-unused-parameter  # interface stubs, placeholders
+	-Wshadow
+	-Wunused-variable
+	-Wunused-value
+	-Wformat=2
+	-Wnon-virtual-dtor
+	-Woverloaded-virtual
 )
 target_compile_options(${PROJECT_NAME} PRIVATE
-	$<$<CXX_COMPILER_ID:GNU,Clang>:${_vkm_gl_warnings}>
+	$<$<CXX_COMPILER_ID:GNU,Clang>:${_vkm_opengl_warnings}>
+	$<$<CXX_COMPILER_ID:Clang>:-Werror=documentation>
 )
 
-# One spelling for a vkmGL header, and it is the flat one: #include "gl_texture.h".
-# Exporting src/ as well let the same header be reached two ways, and both were
-# in use - which meant a reader could not tell, from an include line, whether
-# two files were including the same thing.
+# The root above vkm_opengl/, so an include names the library and its folder:
+# "vkm_opengl/texture/texture.h".
 target_include_directories(${PROJECT_NAME} PUBLIC
-	${CMAKE_CURRENT_SOURCE_DIR}/src/core
-	${CMAKE_CURRENT_SOURCE_DIR}/src/buffer
-	${CMAKE_CURRENT_SOURCE_DIR}/src/vertex
-	${CMAKE_CURRENT_SOURCE_DIR}/src/target
-	${CMAKE_CURRENT_SOURCE_DIR}/src/texture
-	${CMAKE_CURRENT_SOURCE_DIR}/src/shader
+	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
+	$<INSTALL_INTERFACE:include>
+)
+
+# Its log lines say whose they are.
+target_compile_definitions(${PROJECT_NAME} PRIVATE
+	VKM_LOG_SUFFIX="VKM-OPENGL"
 )
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/modules)
 
 # Tests cover only what runs without a GL context, so this binary stays usable
-# on a build machine with no GPU. vkm_gl is always a consumer's subdirectory (it
-# needs the glm and vkm_log targets the consumer adds), so built only when the
+# on a build machine with no GPU. vkm_opengl is always a consumer's subdirectory
+# (it needs the glm and vkm_log targets the consumer adds), so built only when the
 # consumer asks for them.
-option(VKM_GL_BUILD_TESTS "Build the vkm_gl test suite" OFF)
+option(VKM_OPENGL_BUILD_TESTS "Build the vkm_opengl test suite" OFF)
 
-if(VKM_GL_BUILD_TESTS)
+if(VKM_OPENGL_BUILD_TESTS)
 	enable_testing()
-	add_executable(vkm_gl_tests ${CMAKE_CURRENT_SOURCE_DIR}/tests/vkm_gl_tests.cpp)
-	target_link_libraries(vkm_gl_tests PRIVATE ${PROJECT_NAME})
-	target_compile_options(vkm_gl_tests PRIVATE
-		$<$<CXX_COMPILER_ID:GNU,Clang>:${_vkm_gl_warnings}>
+	add_executable(vkm_opengl_tests ${CMAKE_CURRENT_SOURCE_DIR}/tests/vkm_opengl_tests.cpp)
+	target_link_libraries(vkm_opengl_tests PRIVATE ${PROJECT_NAME})
+	target_compile_options(vkm_opengl_tests PRIVATE
+		$<$<CXX_COMPILER_ID:GNU,Clang>:${_vkm_opengl_warnings}>
+		$<$<CXX_COMPILER_ID:Clang>:-Werror=documentation>
 	)
-	add_test(NAME vkm_gl COMMAND vkm_gl_tests)
+	add_test(NAME vkm_opengl COMMAND vkm_opengl_tests)
 endif()
 
 target_link_libraries(${PROJECT_NAME} PUBLIC
