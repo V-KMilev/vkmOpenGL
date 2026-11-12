@@ -1,6 +1,28 @@
 # Changelog
 
-Notable changes to vkmGL, newest first. Each release is tagged `vX.Y.Z`.
+Notable changes to vkmOpenGL, newest first. Each release is tagged `vX.Y.Z`.
+
+## 2.0.0
+
+vkmGL is vkmOpenGL: the library is named for its subject. Every consumer changes its names and
+includes.
+
+- **Renamed**: the repository, the target (`vkm_opengl`), the namespace (`Vkm::OpenGL`),
+  `VKM_OPENGL_CHECK`, `VKM_OPENGL_BUILD_TESTS`; `GLObject` is `Object` and `GLBuffer` is `Buffer`.
+- **Includes** come from one directory and name their folder, without the `gl_` prefix:
+  `#include "vkm_opengl/texture/texture.h"`.
+- **Each debug feature has its flag:** `VKM_OPENGL_ASSERTS` compiles its asserts in whatever the
+  build type, and `VKM_OPENGL_CHECKS` the `glGetError` after each call; neither follows `NDEBUG` any
+  more, and both are off unless the consumer turns them on.
+- **`MAJOR_VERSION`, `MINOR_VERSION` and `GLSL_VERSION`** state the OpenGL the library needs; the
+  shader preprocessor's default `#version` follows them.
+- **`load()`** loads OpenGL on the current context, from a window or from EGL, checks the version,
+  and says why it did not load.
+- **`cube_faces.h`** gives OpenGL's cube-face order with each face's view (`CUBE_FACES`,
+  `cubeFaceView`), and **`DrawElementsIndirectCommand`** the record `multiDrawElementsIndirect`
+  reads.
+- **Its log lines** carry `VKM-OPENGL`, every one of them; its warnings are the engine's set.
+- **A license**: the vkmEngine License.
 
 ## 1.1.5
 
