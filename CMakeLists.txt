@@ -87,21 +87,12 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/modules)
 
-# Tests cover only what runs without a GL context, so this binary stays usable
-# on a build machine with no GPU. vkm_opengl is always a consumer's subdirectory
-# (it needs the glm and vkm_log targets the consumer adds), so built only when the
-# consumer asks for them.
+# The suite (tests/), built when the consumer asks for it: vkm_opengl is always a consumer's
+# subdirectory, as it needs the glm and vkm_log targets the consumer adds.
 option(VKM_OPENGL_BUILD_TESTS "Build the vkm_opengl test suite" OFF)
-
 if(VKM_OPENGL_BUILD_TESTS)
 	enable_testing()
-	add_executable(vkm_opengl_tests ${CMAKE_CURRENT_SOURCE_DIR}/tests/vkm_opengl_tests.cpp)
-	target_link_libraries(vkm_opengl_tests PRIVATE ${PROJECT_NAME})
-	target_compile_options(vkm_opengl_tests PRIVATE
-		$<$<CXX_COMPILER_ID:GNU,Clang>:${_vkm_opengl_warnings}>
-		$<$<CXX_COMPILER_ID:Clang>:-Werror=documentation>
-	)
-	add_test(NAME vkm_opengl COMMAND vkm_opengl_tests)
+	add_subdirectory(tests)
 endif()
 
 target_link_libraries(${PROJECT_NAME} PUBLIC
