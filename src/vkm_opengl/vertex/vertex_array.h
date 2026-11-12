@@ -20,6 +20,22 @@ enum class AttributeKind {
 };
 
 /**
+ * @brief One record of the command list glMultiDrawElementsIndirect reads, laid out as GL reads
+ *        it: five packed 32-bit words (VertexArray::multiDrawElementsIndirect).
+ *
+ * baseInstance offsets every attribute at a non-zero divisor, so each command can read its own
+ * slice of one per-instance list.
+ */
+struct DrawElementsIndirectCommand {
+    uint32_t count         = 0;  ///< Indices per instance.
+    uint32_t instanceCount = 0;  ///< Instances drawn; none draws nothing.
+    uint32_t firstIndex    = 0;  ///< The first index's place in the index buffer.
+    int32_t  baseVertex    = 0;  ///< Added to every index.
+    uint32_t baseInstance  = 0;  ///< The first instance an attribute at a non-zero divisor reads.
+};
+static_assert(sizeof(DrawElementsIndirectCommand) == 20, "GL reads the command as five packed words");
+
+/**
  * @brief Vertex Array Object (VAO) wrapper.
  *
  * Manages vertex attribute state and binding of vertex/index buffers. Provides
@@ -162,8 +178,8 @@ class VertexArray : public Object {
          * @brief Draw @p count indexed draws whose commands lie tightly packed in @p commands,
          *        with this array bound.
          *
-         * Each command is five 32-bit values: count, instance count, first index, base vertex,
-         * base instance. The indirect binding is left on @p commands' buffer.
+         * Each command is a DrawElementsIndirectCommand, tightly packed. The indirect binding is
+         * left on @p commands' buffer.
          *
          * @param mode     The primitive, e.g. GL_TRIANGLES.
          * @param commands Where the first command lies.

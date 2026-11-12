@@ -1,8 +1,10 @@
 // The vkm_opengl test suite. Deliberately covers only what runs without a GL context:
 // vertex layout arithmetic, the shader preprocessor, the error check's shape, a load with
-// no context and the cube's faces. Anything needing a live context belongs in a rendering
-// test, not here - this binary must stay runnable on a build machine with no GPU.
+// no context, the cube's faces and the indirect draw's record. Anything needing a live
+// context belongs in a rendering test, not here - this binary must stay runnable on a
+// build machine with no GPU.
 
+#include <cstddef>
 #include <cstdio>
 #include <filesystem>
 #include <fstream>
@@ -17,6 +19,7 @@
 #include "vkm_opengl/core/version.h"
 #include "vkm_opengl/shader/shader_preprocess.h"
 #include "vkm_opengl/texture/cube_faces.h"
+#include "vkm_opengl/vertex/vertex_array.h"
 #include "vkm_opengl/vertex/vertex_buffer_layout.h"
 
 namespace fs = std::filesystem;
@@ -202,6 +205,16 @@ void testCubeFaces() {
     check("cubeFaceView looks down the face from the eye, its up up", views);
 }
 
+void testIndirectCommand() {
+    std::printf("DrawElementsIndirectCommand:\n");
+
+    using C = Vkm::OpenGL::DrawElementsIndirectCommand;
+    check("is 20 bytes, five packed words", sizeof(C) == 20);
+    check("in GL's order: count, instances, first index, base vertex, base instance",
+          offsetof(C, count) == 0 && offsetof(C, instanceCount) == 4 && offsetof(C, firstIndex) == 8
+              && offsetof(C, baseVertex) == 12 && offsetof(C, baseInstance) == 16);
+}
+
 } // namespace
 
 int main() {
@@ -220,6 +233,7 @@ int main() {
     testErrorCheck();
     testLoad();
     testCubeFaces();
+    testIndirectCommand();
 
     fs::remove_all(dir);
 
