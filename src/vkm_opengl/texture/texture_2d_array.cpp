@@ -20,7 +20,7 @@ void applySampling(uint32_t id, const Texture2DArrayParams& params) {
     set(GL_TEXTURE_WRAP_T, toGLenum(params.wrapT));
     set(GL_TEXTURE_MIN_FILTER, toGLenum(params.minFilter));
     set(GL_TEXTURE_MAG_FILTER, toGLenum(params.magFilter));
-    // The enum exists only with the extension on a 4.5 context; asking without it is an error.
+    // Before 4.6 the enum exists only with the extension; asking without it is an error.
     const float degree = std::min(std::max(params.maxAnisotropy, 1.0f), maxSupportedAnisotropy());
     if (degree > 1.0f) VKM_OPENGL_CHECK(glTextureParameterf(id, GL_TEXTURE_MAX_ANISOTROPY, degree));
 }

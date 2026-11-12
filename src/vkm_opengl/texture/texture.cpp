@@ -121,8 +121,8 @@ float effectiveAnisotropy(const Texture2DParams& params) {
  * @brief Apply @p params' anisotropy to texture @p id.
  *
  * Skipped rather than set to 1.0 when the driver offers none: the enum is only
- * core in GL 4.6, so on the 4.5 context this library targets the call raises
- * GL_INVALID_ENUM rather than quietly doing nothing.
+ * core from GL 4.6, above the version this library needs, so without the
+ * extension the call raises GL_INVALID_ENUM rather than quietly doing nothing.
  *
  * @param id     The texture.
  * @param params Texture parameters to read the requested degree from.

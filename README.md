@@ -1,13 +1,14 @@
 # vkmOpenGL
 
-OpenGL 4.5 objects and state for a renderer that makes no `gl*` call of its own.
+OpenGL objects and state for a renderer that makes no `gl*` call of its own.
 Every GL object - program, texture, buffer, vertex array, framebuffer, fence - is
 a class here, edited by name through direct state access; pipeline state goes
 through `Context`'s cache; every call is under `VKM_OPENGL_CHECK`.
 
 ## Requirements
 
-CMake 3.25 or above, a C++17 compiler and an OpenGL 4.5 driver.
+CMake 3.25 or above, a C++17 compiler and a driver of the OpenGL that
+`vkm_opengl/core/version.h` states, `MAJOR_VERSION`.`MINOR_VERSION` core.
 
 ## Use
 
@@ -36,7 +37,7 @@ Neither debug feature follows `NDEBUG`: a consumer that sets no flag gets a libr
 
 | Folder    | What                                                                                   |
 |-----------|----------------------------------------------------------------------------------------|
-| `core`    | `Context` (state cache, limits, barriers), `Object`, `VKM_OPENGL_CHECK`, debug output  |
+| `core`    | `Context` (state cache, limits, barriers), `Object`, `VKM_OPENGL_CHECK`, debug output, the version it needs |
 | `buffer`  | `Buffer` and its vertex, index, uniform and storage kinds; `StreamRing`, `Fence`, `ReadbackBuffer` |
 | `vertex`  | `VertexArray` (attribute formats, bindings, draws), `VertexBufferLayout`                |
 | `texture` | `Texture2D`, `Texture2DArray`, `Texture3D`, `TextureCube`, `TextureCubeArray`, `MipChainTexture`, `Sampler` |

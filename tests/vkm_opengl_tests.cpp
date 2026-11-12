@@ -11,6 +11,7 @@
 #include "vkm_log/logger.h"
 
 #include "vkm_opengl/core/error_handle.h"
+#include "vkm_opengl/core/version.h"
 #include "vkm_opengl/shader/shader_preprocess.h"
 #include "vkm_opengl/vertex/vertex_buffer_layout.h"
 
@@ -82,9 +83,14 @@ void testVertexBufferLayout() {
 void testShaderPreprocessor(const fs::path& dir) {
     std::printf("Shader preprocessor:\n");
 
-    Vkm::OpenGL::setShaderPrelude(430);
-
     write(dir / "plain.glsl", "void main() {}\n");
+    const std::string version = "#version " + std::to_string(Vkm::OpenGL::GLSL_VERSION) + " core";
+    check("GLSL_VERSION is the GLSL of MAJOR_VERSION.MINOR_VERSION",
+          Vkm::OpenGL::GLSL_VERSION == Vkm::OpenGL::MAJOR_VERSION * 100 + Vkm::OpenGL::MINOR_VERSION * 10);
+    check("with no prelude set, the #version is GLSL_VERSION",
+          Vkm::OpenGL::preprocessShaderSource((dir / "plain.glsl").string()).rfind(version, 0) == 0);
+
+    Vkm::OpenGL::setShaderPrelude(430);
     const std::string plain = Vkm::OpenGL::preprocessShaderSource((dir / "plain.glsl").string());
     check("the #version is prepended", plain.rfind("#version 430 core", 0) == 0);
     check("a stage with no include is otherwise verbatim",

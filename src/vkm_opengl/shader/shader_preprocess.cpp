@@ -11,6 +11,8 @@
 
 #include "vkm_log/logger.h"
 
+#include "vkm_opengl/core/version.h"
+
 namespace fs = std::filesystem;
 
 namespace Vkm::OpenGL {
@@ -21,7 +23,7 @@ namespace {
 // holds its registry: a function-local static initializes on first use and
 // needs no ordering guarantee against other translation units.
 int& glslVersion() {
-    static int version = DEFAULT_GLSL_VERSION;
+    static int version = GLSL_VERSION;
     return version;
 }
 

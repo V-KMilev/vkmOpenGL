@@ -6,16 +6,11 @@
 namespace Vkm::OpenGL {
 
 /**
- * @brief GLSL version injected when none is set explicitly - GL 4.5 core, what this library calls.
- */
-constexpr int DEFAULT_GLSL_VERSION = 450;
-
-/**
  * @brief Set the text prepended to every shader stage.
  *
  * Two things go in front of every stage and both are the same idea - something
- * the loader owns rather than something each file copies. The `#version` comes
- * from the GL context version requested at window creation. The constants come
+ * the loader owns rather than something each file copies. The `#version` is
+ * GLSL_VERSION (version.h) unless the caller asks for another. The constants come
  * from whoever is driving this: array capacities, grid dimensions, debug-mode
  * ordinals - values that live in the application's own code and would otherwise
  * be hand-copied into GLSL, or generated into it by a build step that has to

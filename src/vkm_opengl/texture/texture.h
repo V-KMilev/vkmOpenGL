@@ -103,9 +103,9 @@ GLenum toGLenum(TextureCompare compare);
 /**
  * @brief The highest degree of anisotropic filtering this driver will accept.
  *
- * GL_TEXTURE_MAX_ANISOTROPY is only core in 4.6, so on the 4.5 context this
- * library targets it exists only when GL_ARB_texture_filter_anisotropic or its
- * EXT predecessor is present. Returns 1.0 when neither is, which is the value
+ * GL_TEXTURE_MAX_ANISOTROPY is only core from 4.6, above the version this
+ * library needs (version.h), so it exists only when
+ * GL_ARB_texture_filter_anisotropic or its EXT predecessor is present. Returns 1.0 when neither is, which is the value
  * meaning "no anisotropy" and lets callers degrade to plain trilinear without
  * a separate capability test.
  *
