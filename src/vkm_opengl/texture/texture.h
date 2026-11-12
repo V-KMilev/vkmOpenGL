@@ -1,0 +1,379 @@
+#pragma once
+
+#include <array>
+#include <cstdint>
+#include <string>
+
+#include <GL/glew.h>
+
+#include "vkm_opengl/core/object.h"
+
+namespace Vkm::OpenGL {
+
+/**
+ * @brief Enum specifying texture wrapping mode.
+ */
+enum class TextureWrap {
+    Repeat,             ///< Repeat the texture
+    MirroredRepeat,     ///< Mirror and repeat the texture
+    ClampToEdge,        ///< Clamp texture coordinates to edges
+    ClampToBorder       ///< Clamp to user-defined border color
+};
+
+/**
+ * @brief Enum specifying minifying filter for textures.
+ */
+enum class TextureMinFilter : int {
+    Nearest,                ///< Nearest texel
+    Linear,                 ///< Linear interpolation
+    NearestMipmapNearest,   ///< Nearest mipmap, nearest texel
+    LinearMipmapNearest,    ///< Nearest mipmap, linear texel
+    NearestMipmapLinear,    ///< Linear mipmap, nearest texel
+    LinearMipmapLinear      ///< Linear mipmap, linear texel
+};
+
+/**
+ * @brief Enum specifying magnification filter for textures.
+ */
+enum class TextureMagFilter : int {
+    Nearest,    ///< Nearest texel
+    Linear      ///< Linear interpolation
+};
+
+/**
+ * @brief Whether a sampler compares its reads against a reference value.
+ *
+ * A depth texture read through a `sampler2DShadow` returns the filtered
+ * fraction of texels that passed a comparison rather than a depth. That is
+ * sampler state rather than texture state, so the same depth texture can be
+ * read both ways at once from two units - which is what a shadow atlas that is
+ * both sampled for shadowing and visualized as an image needs.
+ */
+enum class TextureCompare {
+    None,           ///< No comparison: the sampler returns the stored value
+    Never,          ///< Never passes
+    Less,           ///< Passes where reference < stored
+    Equal,          ///< Passes where reference == stored
+    LessEqual,      ///< Passes where reference <= stored (the shadow-map default)
+    Greater,        ///< Passes where reference > stored
+    NotEqual,       ///< Passes where reference != stored
+    GreaterEqual,   ///< Passes where reference >= stored
+    Always          ///< Always passes
+};
+
+/**
+ * @brief Map a wrap mode to the OpenGL enum glTextureParameteri expects.
+ *
+ * Free functions rather than per-class statics: the mapping depends only on
+ * the enum, and every texture type plus Sampler needs the same answer.
+ *
+ * @param wrap Wrap mode to translate.
+ * @return The corresponding GL_* constant.
+ */
+GLenum toGLenum(TextureWrap wrap);
+
+/**
+ * @brief Map a minification filter to its OpenGL enum.
+ *
+ * @param filter Filter to translate.
+ * @return The corresponding GL_* constant.
+ */
+GLenum toGLenum(TextureMinFilter filter);
+
+/**
+ * @brief Map a magnification filter to its OpenGL enum.
+ *
+ * @param filter Filter to translate.
+ * @return The corresponding GL_* constant.
+ */
+GLenum toGLenum(TextureMagFilter filter);
+
+/**
+ * @brief Map a comparison to its OpenGL comparison function.
+ *
+ * TextureCompare::None has no function of its own - it is expressed by setting
+ * GL_TEXTURE_COMPARE_MODE to GL_NONE - so it maps to the shadow-map default,
+ * which the mode then makes irrelevant.
+ *
+ * @param compare Comparison to translate.
+ * @return The corresponding GL_* constant.
+ */
+GLenum toGLenum(TextureCompare compare);
+
+/**
+ * @brief The highest degree of anisotropic filtering this driver will accept.
+ *
+ * GL_TEXTURE_MAX_ANISOTROPY is only core from 4.6, above the version this
+ * library needs (version.h), so it exists only when
+ * GL_ARB_texture_filter_anisotropic or its EXT predecessor is present. Returns 1.0 when neither is, which is the value
+ * meaning "no anisotropy" and lets callers degrade to plain trilinear without
+ * a separate capability test.
+ *
+ * Queried once on first call, so it needs a current context but costs nothing
+ * after that.
+ *
+ * @return GL_MAX_TEXTURE_MAX_ANISOTROPY, or 1.0 when unsupported.
+ */
+float maxSupportedAnisotropy();
+
+/**
+ * @brief Parameters for initializing a 2D texture.
+ */
+struct Texture2DParams {
+    uint32_t width  = 0;                                                  ///< Texture width
+    uint32_t height = 0;                                                  ///< Texture height
+
+    GLenum internalFormat = GL_RGBA8;                                     ///< Internal OpenGL format
+    GLenum format         = GL_RGBA;                                      ///< Data format
+    GLenum type           = GL_UNSIGNED_BYTE;                             ///< Data type
+
+    TextureWrap wrapS          = TextureWrap::ClampToEdge;                ///< S axis wrapping
+    TextureWrap wrapT          = TextureWrap::ClampToEdge;                ///< T axis wrapping
+    TextureMinFilter minFilter = TextureMinFilter::LinearMipmapLinear;    ///< Minifying filter
+    TextureMagFilter magFilter = TextureMagFilter::Linear;                ///< Magnification filter
+
+    float maxAnisotropy = 1.0f;                                           ///< Anisotropic filtering degree (1 = off); clamped to the driver's limit
+
+    bool generateMipmaps = true;                                          ///< Automatically generate mipmaps
+    uint32_t levels      = 0;                                             ///< Levels; 0: see levelCount
+    const void* data     = nullptr;                                       ///< Pointer to initial data
+
+    /// Samples a texel; above 1 a multisampled texture, which takes no pixels, levels or filter.
+    uint32_t samples     = 1;
+};
+
+/**
+ * @brief How many levels @p params allocates.
+ *
+ * @param params The texture's parameters.
+ * @return params.levels, or with none given the whole chain down to 1x1 when it generates
+ *         mipmaps and level 0 alone when it does not.
+ */
+uint32_t levelCount(const Texture2DParams& params);
+
+/**
+ * @brief Params preset for an off-screen render-target texture: clamped, no
+ * mipmaps, GL_FLOAT source type, no initial data. Filtering defaults to
+ * nearest (depth / data targets); color targets pass linear.
+ */
+Texture2DParams renderTargetParams(
+    uint32_t width,
+    uint32_t height,
+    GLenum internalFormat,
+    GLenum format,
+    TextureMinFilter minFilter = TextureMinFilter::Nearest,
+    TextureMagFilter magFilter = TextureMagFilter::Nearest
+);
+
+
+/**
+ * @brief Bind @p texture to sampler unit @p unit, unless it is bound there already.
+ *
+ * Every vkmOpenGL texture binds a unit through here, and deletes through deleteTextures(), so what
+ * each unit holds is known: a draw that binds again what is bound costs the driver all the same.
+ *
+ * @param unit    The unit a shader's sampler names.
+ * @param texture The texture, of any target.
+ */
+void bindTextureUnit(uint32_t unit, GLuint texture);
+
+/**
+ * @brief Delete @p count textures, and forget them on every unit they were bound to.
+ *
+ * @param count    How many.
+ * @param textures Their names; 0 is none.
+ */
+void deleteTextures(GLsizei count, const GLuint* textures);
+
+/**
+ * @brief A 2D OpenGL texture object with immutable storage: sample it, set parameters, fill levels.
+ *
+ * Every edit goes through direct state access, so none disturbs what is bound. The storage is
+ * fixed at creation - levelCount(params) levels of params.internalFormat - and setData() makes new
+ * storage, under a new name, only when the size changes.
+ *
+ * Built from pixels the caller already has. Decoding a file is not this module's job - a platform
+ * layer that owned an image decoder would decide the application's image formats for it - so an
+ * application decodes with whatever it uses elsewhere and hands the bytes over.
+ */
+class Texture2D : public Object {
+    public:
+        Texture2D() = delete;
+        ~Texture2D() override;
+
+        Texture2D(const Texture2D& other) = delete;
+        Texture2D& operator=(const Texture2D& other) = delete;
+
+        Texture2D(Texture2D && other) noexcept = default;
+        Texture2D& operator=(Texture2D && other) noexcept;
+
+        explicit Texture2D(
+            const std::string& name,
+            const Texture2DParams& params
+        );
+
+    public:
+        /**
+         * @brief Bind the texture to a texture unit for sampling.
+         * @param slot Texture unit.
+         */
+        void bindSlot(uint32_t slot) const;
+
+        /**
+         * @brief Bind one level as an image, in the texture's own format, for a shader to read or
+         *        write.
+         *
+         * @param unit   Image unit the shader names.
+         * @param access GL_READ_ONLY, GL_WRITE_ONLY or GL_READ_WRITE.
+         * @param level  The level.
+         */
+        void bindImage(uint32_t unit, GLenum access, uint32_t level = 0) const;
+
+        /**
+         * @brief Fill one level with a single value.
+         *
+         * @param level  The level.
+         * @param format GL format of @p value, e.g. GL_RGBA or GL_DEPTH_COMPONENT.
+         * @param type   GL type of each of its channels.
+         * @param value  One texel's worth; null clears to zero.
+         */
+        void clear(uint32_t level, GLenum format, GLenum type, const void* value) const;
+
+        /**
+         * @brief The parameters this texture was created with.
+         * @return Its Texture2DParams.
+         */
+        const Texture2DParams& getParams() const { return m_params; }
+
+        /**
+         * @brief The debug label this texture was created under.
+         * @return The name.
+         */
+        const std::string& getName() const { return m_name; }
+
+        /**
+         * @brief Fill level 0 with new pixels, and the chain below when it generates mipmaps.
+         *
+         * A new size makes new storage, so the texture's name changes: an FBO attachment or a
+         * handle taken from getID() before is stale after.
+         *
+         * @param data   Pointer to pixel data.
+         * @param width  Width of new data.
+         * @param height Height of new data.
+         * @param format OpenGL data format.
+         * @param type   OpenGL data type.
+         */
+        void setData(const void* data, uint32_t width, uint32_t height, GLenum format, GLenum type);
+
+        /**
+         * @brief Fill one level with pixels of the texture's current format and type.
+         *
+         * @param level  The level, below levels().
+         * @param pixels Its pixels, tightly packed at the level's own size.
+         */
+        void uploadLevel(uint32_t level, const void* pixels) const;
+
+        /**
+         * @brief Fill one level of a block-compressed texture.
+         *
+         * @param level  The level, below levels().
+         * @param blocks Its blocks.
+         * @param bytes  How many bytes they take.
+         */
+        void uploadCompressedLevel(uint32_t level, const void* blocks, uint32_t bytes) const;
+
+        /// Build every level below 0 from level 0.
+        void generateMipmaps() const;
+
+        /**
+         * @brief Choose which channel each of r, g, b and a reads, kept across setData()'s new
+         *        storage.
+         *
+         * @param rgba GL_RED, GL_GREEN, GL_BLUE, GL_ALPHA, GL_ZERO or GL_ONE for each.
+         */
+        void setSwizzle(const GLint rgba[4]);
+
+        /**
+         * @brief How many levels the storage holds.
+         * @return levelCount() of its parameters; a texture of no size holds none.
+         */
+        uint32_t levels() const { return levelCount(m_params); }
+
+        /// Whether it is multisampled: params.samples above 1.
+        bool multisampled() const { return m_params.samples > 1; }
+
+        /**
+         * @brief Set the S and T coordinate wrapping modes.
+         * @param s S coordinate wrap mode.
+         * @param t T coordinate wrap mode.
+         */
+        void setWrap(TextureWrap s, TextureWrap t);
+
+        /**
+         * @brief Set the min/mag filtering for the texture.
+         *
+         * Separate from setMaxAnisotropy because the two are independent: a
+         * caller re-applying a filtering mode every frame must not disturb the
+         * degree, and vice versa. Both early-out when nothing changed.
+         *
+         * The stored anisotropy request is left alone, but the degree the
+         * driver is given is re-derived here: it is 1 for a filter that walks
+         * no mip chain, so it cannot survive a change of minification filter
+         * untouched.
+         *
+         * @param minFilter Minifying filter.
+         * @param magFilter Magnifying filter.
+         */
+        void setFilter(TextureMinFilter minFilter, TextureMagFilter magFilter);
+
+        /**
+         * @brief Set how far the sampler may stretch its footprint when minifying.
+         *
+         * A surface seen edge-on covers a texel footprint far longer in one
+         * direction than the other, and a single mip level cannot represent
+         * both - so the hardware picks one for the wide axis and the detail
+         * along the narrow one is lost. A degree above 1 lets it take that many
+         * samples along the long axis instead.
+         *
+         * Clamped to maxSupportedAnisotropy(), so a level the driver does not
+         * offer degrades to the highest it does rather than failing. A texture
+         * whose minification filter walks no mip chain is left at 1 whatever is
+         * asked: it has no mip selection to correct, and multi-tap filtering
+         * would only soften content that was asked to stay sharp.
+         *
+         * @param maxAnisotropy Requested degree; values below 1 are treated as 1.
+         */
+        void setMaxAnisotropy(float maxAnisotropy);
+
+        /**
+         * @brief Get the width of the texture.
+         * @return Texture width in pixels.
+         */
+        uint32_t getWidth() const { return m_params.width; }
+
+        /**
+         * @brief Get the height of the texture.
+         * @return Texture height in pixels.
+         */
+        uint32_t getHeight() const { return m_params.height; }
+
+    private:
+        /**
+         * @brief Delete the texture and zero m_id.
+         *
+         * Idempotent, so it is safe on a moved-from texture or after a previous release().
+         */
+        void release() noexcept;
+
+        /// Create the name and its storage from m_params, level 0 filled from m_params.data.
+        void allocate();
+
+        void applyParameters() const;
+
+    private:
+        std::string          m_name;     ///< Debug label, for GL object naming and logs.
+        Texture2DParams      m_params;
+        std::array<GLint, 4> m_swizzle = {GL_RED, GL_GREEN, GL_BLUE, GL_ALPHA};  ///< See setSwizzle().
+};
+
+} // namespace Vkm::OpenGL
