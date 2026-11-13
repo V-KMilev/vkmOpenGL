@@ -15,13 +15,16 @@ includes.
   build type, and `VKM_OPENGL_CHECKS` the `glGetError` after each call; neither follows `NDEBUG` any
   more, and both are off unless the consumer turns them on.
 - **`MAJOR_VERSION`, `MINOR_VERSION` and `GLSL_VERSION`** state the OpenGL the library needs; the
-  shader preprocessor's default `#version` follows them.
+  shader preprocessor's default `#version` follows them. `DEFAULT_GLSL_VERSION` is gone: name
+  `GLSL_VERSION`.
 - **`load()`** loads OpenGL on the current context, from a window or from EGL, checks the version,
   and says why it did not load.
 - **`cube_faces.h`** gives OpenGL's cube-face order with each face's view (`CUBE_FACES`,
   `cubeFaceView`), and **`DrawElementsIndirectCommand`** the record `multiDrawElementsIndirect`
   reads.
 - **Its log lines** carry `VKM-OPENGL`, every one of them; its warnings are the engine's set.
+- **It needs a vkmLog newer than 0.0.6:** it includes `vkm_log/logger.h` and `vkm_log/assert.h`, and
+  a failed `VKM_OPENGL_CHECK` stops the program through `Vkm::Log::stopProgram`.
 - **A license**: the vkmEngine License.
 
 ## 1.1.5
@@ -95,7 +98,7 @@ multisampled textures, fences and readbacks, and the state a frame sets.
 - **`VertexArray`** sets attribute formats of each kind, its buffer bindings and index buffer,
   and draws instanced, multi and indirect.
 - **`Context`** caches alpha to coverage, polygon offset, depth clamp, clip planes and a
-  per-buffer colour mask, and sets clip control, pixel alignment and seamless cubes;
+  per-buffer color mask, and sets clip control, pixel alignment and seamless cubes;
   `setDefaultState` resets them all. `FrameBuffer` clears its own attachments by name.
 - The driver's debug messages log under the category `DRIVER`, and its performance notes below
   high severity at debug rather than as warnings.
