@@ -84,24 +84,13 @@ namespace {
 } // namespace
 
 void enableGLDebugLogging(bool synchronous) {
-#ifdef GL_DEBUG_OUTPUT
-    if (!glDebugMessageCallback) {
-        LOG_WARNING("GL debug output not available (glDebugMessageCallback missing)");
-        return;
-    }
-
     VKM_OPENGL_CHECK(glEnable(GL_DEBUG_OUTPUT));
     if (synchronous) {
         VKM_OPENGL_CHECK(glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS));
     }
 
     VKM_OPENGL_CHECK(glDebugMessageCallback(glDebugCallback, nullptr));
-    // Optionally filter messages: here we keep all severities except we early-return notifications above.
     LOG_INFO("GL debug output enabled%s", synchronous ? " (synchronous)" : "");
-#else
-    LOG_WARNING("GL_DEBUG_OUTPUT not supported at compile time");
-    (void)synchronous;
-#endif
 }
 
 } // namespace Vkm::OpenGL

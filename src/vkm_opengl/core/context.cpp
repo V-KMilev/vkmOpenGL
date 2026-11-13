@@ -171,7 +171,7 @@ void Context::setColorMask(uint32_t drawBuffer, bool r, bool g, bool b, bool a) 
 
 namespace {
 
-/// User clip planes setDefaultState() resets: the least every GL 4.5 driver offers.
+/// User clip planes setDefaultState() resets: the least GL_MAX_CLIP_DISTANCES can be.
 constexpr uint32_t CLIP_PLANES = 8;
 
 // Turn @p capability on or off when @p cached says otherwise, and remember it.
@@ -275,11 +275,9 @@ int32_t Context::maxSamples() const {
 
 int32_t Context::maxTextureSize() const {
     if (m_maxTextureSize < 0) {
-        // GL 4.5 guarantees 16384; the floor here is only for a query that
-        // failed, so a caller clamping against it still gets a usable size.
-        GLint size = 1024;
+        GLint size = 0;
         VKM_OPENGL_CHECK(glGetIntegerv(GL_MAX_TEXTURE_SIZE, &size));
-        m_maxTextureSize = size > 0 ? size : 1024;
+        m_maxTextureSize = size;
     }
     return m_maxTextureSize;
 }

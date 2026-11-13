@@ -375,7 +375,7 @@ class Context {
         /**
          * @brief Enable or disable user clip plane @p plane (gl_ClipDistance[plane]).
          *
-         * @param plane  Below 8, the least every GL 4.5 driver offers.
+         * @param plane  Below 8, the least GL_MAX_CLIP_DISTANCES can be.
          * @param enable True to clip by it.
          */
         void setClipDistance(uint32_t plane, bool enable);
@@ -443,12 +443,10 @@ class Context {
         /**
          * @brief Largest 2D texture edge the driver accepts (GL_MAX_TEXTURE_SIZE).
          *
-         * Queried once on first use and cached, like maxSamples(). What an
-         * atlas or a pyramid sized from authored settings clamps against: a
-         * request past it is not a texture that renders badly, it is one the
-         * driver refuses to allocate at all.
+         * Queried once on first use and cached, like maxSamples(): a texture past it is one the driver
+         * refuses to allocate.
          *
-         * @return The limit in texels; at least 1024 on any GL 4.5 context.
+         * @return The limit in texels.
          */
         int32_t maxTextureSize() const;
 
