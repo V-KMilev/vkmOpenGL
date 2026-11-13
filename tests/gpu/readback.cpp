@@ -2,6 +2,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <utility>
 
 #include <GL/glew.h>
 
@@ -86,6 +87,20 @@ TEST("wait returns once the capture in flight has landed, and none is in flight 
     CHECK(pixelsOf(readback, 0, 255, 0) == SIDE * SIDE);
     glDeleteFramebuffers(1, &busy);
     glDeleteTextures(1, &target);
+}
+
+TEST("a readback buffer moved from holds nothing") {
+    Vkm::Test::requireContext();
+    ReadbackBuffer from(BYTES);
+    ReadbackBuffer to(std::move(from));
+    CHECK(from.size() == 0u);
+    CHECK(from.data() == nullptr);
+    CHECK(to.size() == BYTES);
+
+    ReadbackBuffer assigned(16);
+    assigned = std::move(to);
+    CHECK(to.size() == 0u);
+    CHECK(assigned.size() == BYTES);
 }
 
 TEST("with the library's asserts on, a capture empty or past the buffer's size, rows padded, stops the program") {

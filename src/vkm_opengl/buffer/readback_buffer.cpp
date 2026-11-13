@@ -81,7 +81,7 @@ ReadbackBuffer::~ReadbackBuffer() {
 
 ReadbackBuffer::ReadbackBuffer(ReadbackBuffer && other) noexcept
     : Object(std::move(other))
-    , m_bytes(other.m_bytes)
+    , m_bytes(std::exchange(other.m_bytes, 0))
     , m_data(std::exchange(other.m_data, nullptr))
     , m_fence(std::move(other.m_fence)) {}
 
@@ -89,7 +89,7 @@ ReadbackBuffer& ReadbackBuffer::operator=(ReadbackBuffer && other) noexcept {
     if (this != &other) {
         release();
         Object::operator=(std::move(other));
-        m_bytes  = other.m_bytes;
+        m_bytes  = std::exchange(other.m_bytes, 0);
         m_data   = std::exchange(other.m_data, nullptr);
         m_fence  = std::move(other.m_fence);
     }
