@@ -34,11 +34,11 @@ class ShaderBase : public Object {
         ShaderBase() = delete;
         ~ShaderBase() override;
 
-        ShaderBase(const ShaderBase& shader) = delete;
-        ShaderBase& operator=(const ShaderBase& shader) = delete;
+        ShaderBase(const ShaderBase& other) = delete;
+        ShaderBase& operator=(const ShaderBase& other) = delete;
 
-        ShaderBase(ShaderBase && shader) noexcept;
-        ShaderBase& operator=(ShaderBase && shader) noexcept;
+        ShaderBase(ShaderBase && other) noexcept;
+        ShaderBase& operator=(ShaderBase && other) noexcept;
 
     public:
         /**

@@ -290,8 +290,11 @@ void Texture2D::setFilter(TextureMinFilter minFilter, TextureMagFilter magFilter
 
     m_params.minFilter = minFilter;
     m_params.magFilter = magFilter;
-    VKM_OPENGL_CHECK(glTextureParameteri(m_id, GL_TEXTURE_MIN_FILTER, static_cast<GLint>(toGLenum(minFilter))));
-    VKM_OPENGL_CHECK(glTextureParameteri(m_id, GL_TEXTURE_MAG_FILTER, static_cast<GLint>(toGLenum(magFilter))));
+    const auto glMin = static_cast<GLint>(toGLenum(minFilter));
+    const auto glMag = static_cast<GLint>(toGLenum(magFilter));
+
+    VKM_OPENGL_CHECK(glTextureParameteri(m_id, GL_TEXTURE_MIN_FILTER, glMin));
+    VKM_OPENGL_CHECK(glTextureParameteri(m_id, GL_TEXTURE_MAG_FILTER, glMag));
     // The minification filter is the other half of what degree the driver ends
     // up applying, so a new one has to be pushed through it. setMaxAnisotropy
     // compares against the stored request and would not re-send it.
@@ -373,8 +376,8 @@ GLenum toGLenum(TextureCompare compare) {
 
 float maxSupportedAnisotropy() {
     // A driver constant: asked once.
-    static const float SUPPORTED = queryMaxAnisotropy();
-    return SUPPORTED;
+    static const float s_supported = queryMaxAnisotropy();
+    return s_supported;
 }
 
 } // namespace Vkm::OpenGL

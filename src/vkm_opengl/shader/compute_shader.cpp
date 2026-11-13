@@ -35,7 +35,11 @@ ComputeShaderSource::ComputeShaderSource(const std::string& path)
 
 bool ComputeShaderSource::validatePath(const std::string& computeShaderName) {
     if (!fs::exists(computeShaderName)) {
-        LOG_FATAL("Compute shader '%s' missing compute shader at '%s'", m_path.c_str(), computeShaderName.c_str());
+        LOG_FATAL(
+            "Compute shader '%s' missing compute shader at '%s'",
+            m_path.c_str(),
+            computeShaderName.c_str()
+        );
         return false;
     }
     return true;

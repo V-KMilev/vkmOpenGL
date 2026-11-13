@@ -45,11 +45,11 @@ class ComputeShader : public ShaderBase {
         ComputeShader() = delete;
         ~ComputeShader() override = default;
 
-        ComputeShader(const ComputeShader& shader) = delete;
-        ComputeShader& operator=(const ComputeShader& shader) = delete;
+        ComputeShader(const ComputeShader& other) = delete;
+        ComputeShader& operator=(const ComputeShader& other) = delete;
 
-        ComputeShader(ComputeShader && shader) noexcept = default;
-        ComputeShader& operator=(ComputeShader && shader) noexcept = default;
+        ComputeShader(ComputeShader && other) noexcept = default;
+        ComputeShader& operator=(ComputeShader && other) noexcept = default;
 
         /**
          * @brief Construct and load compute shader from the directory at path.

@@ -19,19 +19,18 @@ namespace Vkm::OpenGL {
 
 namespace {
 
-// Mutable process-wide state behind an accessor, matching how shader_reload
-// holds its registry: a function-local static initializes on first use and
-// needs no ordering guarantee against other translation units.
+// Process-wide state behind an accessor: a function-local static initializes on first use, with no
+// order against other translation units.
 int& glslVersion() {
-    static int version = GLSL_VERSION;
-    return version;
+    static int s_version = GLSL_VERSION;
+    return s_version;
 }
 
 // The application's own constants, inserted after the #version line. Empty
 // until something sets them, which is what makes this module usable without.
 std::string& preludeConstants() {
-    static std::string constants;
-    return constants;
+    static std::string s_constants;
+    return s_constants;
 }
 
 // Resolve `#include "relative/path"` directives, inlining referenced files

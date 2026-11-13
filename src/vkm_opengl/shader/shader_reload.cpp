@@ -16,12 +16,11 @@ namespace Vkm::OpenGL {
 
 namespace {
 
-// Live shaders, in construction order. A vector rather than a set because the
-// list is short (tens), walked far more often than it is edited, and iteration
-// order should be stable so two reload logs read the same way.
+// Live shaders, in construction order: walked far more often than edited, and in a stable order so
+// two reload logs read the same way.
 std::vector<ShaderBase*>& liveShaders() {
-    static std::vector<ShaderBase*> shaders;
-    return shaders;
+    static std::vector<ShaderBase*> s_shaders;
+    return s_shaders;
 }
 
 // Newest write time seen under the watched directory; empty until the first
@@ -34,8 +33,8 @@ std::vector<ShaderBase*>& liveShaders() {
 // timestamp. Used as a sentinel it silently means "nothing is ever newer", and
 // the reload never fires.
 std::optional<std::filesystem::file_time_type>& lastSeenWrite() {
-    static std::optional<std::filesystem::file_time_type> stamp;
-    return stamp;
+    static std::optional<std::filesystem::file_time_type> s_stamp;
+    return s_stamp;
 }
 
 /**

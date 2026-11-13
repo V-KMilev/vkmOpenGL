@@ -63,7 +63,7 @@ struct ColorMaskState {
 };
 
 /**
- * @brief Raster (pipeline) state configuration, encompassing depth, culling, blending, and some additional features.
+ * @brief Raster (pipeline) state: depth, culling, blending and the rest Context caches.
  */
 struct RasterState {
     DepthState     depth;            ///< Depth state.

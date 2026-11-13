@@ -29,32 +29,32 @@ add_library(${PROJECT_NAME} SHARED ${SOURCES})
 # The public surface carries no __declspec(dllexport), so on Windows CMake generates the export
 # table from the object files; without it an MSVC build links a DLL that exports nothing.
 set_target_properties(${PROJECT_NAME} PROPERTIES
-	WINDOWS_EXPORT_ALL_SYMBOLS ON
+    WINDOWS_EXPORT_ALL_SYMBOLS ON
 )
 
 # Its warning set, for its own sources only: glew under modules/ keeps its own level. Clang reads
 # the doc blocks: a @param naming no parameter is an error.
 set(_vkm_opengl_warnings
-	-Wall
-	-Wextra
-	-Wno-unused-parameter  # interface stubs, placeholders
-	-Wshadow
-	-Wunused-variable
-	-Wunused-value
-	-Wformat=2
-	-Wnon-virtual-dtor
-	-Woverloaded-virtual
+    -Wall
+    -Wextra
+    -Wno-unused-parameter  # interface stubs, placeholders
+    -Wshadow
+    -Wunused-variable
+    -Wunused-value
+    -Wformat=2
+    -Wnon-virtual-dtor
+    -Woverloaded-virtual
 )
 target_compile_options(${PROJECT_NAME} PRIVATE
-	$<$<CXX_COMPILER_ID:GNU,Clang>:${_vkm_opengl_warnings}>
-	$<$<CXX_COMPILER_ID:Clang>:-Werror=documentation>
+    $<$<CXX_COMPILER_ID:GNU,Clang>:${_vkm_opengl_warnings}>
+    $<$<CXX_COMPILER_ID:Clang>:-Werror=documentation>
 )
 
 # The root above vkm_opengl/, so an include names the library and its folder:
 # "vkm_opengl/texture/texture.h".
 target_include_directories(${PROJECT_NAME} PUBLIC
-	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
-	$<INSTALL_INTERFACE:include>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
+    $<INSTALL_INTERFACE:include>
 )
 
 # Debug features follow flags, each off unless the consumer turns it on; neither
@@ -65,18 +65,18 @@ option(VKM_OPENGL_CHECKS  "Read GL's error queue after every call (VKM_OPENGL_CH
 # VKM_ASSERT keys on NDEBUG, which a RelWithDebInfo or Release build defines: on,
 # the library's own sources compile without it.
 if(VKM_OPENGL_ASSERTS)
-	target_compile_options(${PROJECT_NAME} PRIVATE $<IF:$<CXX_COMPILER_ID:MSVC>,/UNDEBUG,-UNDEBUG>)
+    target_compile_options(${PROJECT_NAME} PRIVATE $<IF:$<CXX_COMPILER_ID:MSVC>,/UNDEBUG,-UNDEBUG>)
 endif()
 
 # Public: the headers' inline calls are checked too, and every file that expands
 # them must expand them alike.
 if(VKM_OPENGL_CHECKS)
-	target_compile_definitions(${PROJECT_NAME} PUBLIC VKM_OPENGL_CHECKS)
+    target_compile_definitions(${PROJECT_NAME} PUBLIC VKM_OPENGL_CHECKS)
 endif()
 
 # Its log lines say whose they are.
 target_compile_definitions(${PROJECT_NAME} PRIVATE
-	VKM_LOG_SUFFIX="VKM-OPENGL"
+    VKM_LOG_SUFFIX="VKM-OPENGL"
 )
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/modules)
@@ -85,13 +85,13 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/modules)
 # subdirectory, as it needs the glm and vkm_log targets the consumer adds.
 option(VKM_OPENGL_BUILD_TESTS "Build the vkm_opengl test suite" OFF)
 if(VKM_OPENGL_BUILD_TESTS)
-	enable_testing()
-	add_subdirectory(tests)
+    enable_testing()
+    add_subdirectory(tests)
 endif()
 
 target_link_libraries(${PROJECT_NAME} PUBLIC
-	OpenGL::GL
-	glew
-	glm
-	vkm_log
+    OpenGL::GL
+    glew
+    glm
+    vkm_log
 )

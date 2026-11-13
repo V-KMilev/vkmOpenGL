@@ -435,12 +435,14 @@ void ShaderBase::setUniform2fv(const char* uniformName, const glm::vec2& v) cons
 
 void ShaderBase::setUniformMatrix4fv(const char* uniformName, const glm::mat4& matrix) const {
     const int32_t location = locationToChange(uniformName, &matrix, sizeof(matrix));
-    if (location != -1) VKM_OPENGL_CHECK(glProgramUniformMatrix4fv(m_id, location, 1, GL_FALSE, &matrix[0][0]));
+    if (location == -1) return;
+    VKM_OPENGL_CHECK(glProgramUniformMatrix4fv(m_id, location, 1, GL_FALSE, &matrix[0][0]));
 }
 
 void ShaderBase::setUniformMatrix3fv(const char* uniformName, const glm::mat3& matrix) const {
     const int32_t location = locationToChange(uniformName, &matrix, sizeof(matrix));
-    if (location != -1) VKM_OPENGL_CHECK(glProgramUniformMatrix3fv(m_id, location, 1, GL_FALSE, &matrix[0][0]));
+    if (location == -1) return;
+    VKM_OPENGL_CHECK(glProgramUniformMatrix3fv(m_id, location, 1, GL_FALSE, &matrix[0][0]));
 }
 
 void ShaderBase::setUniform1ui(const char* uniformName, uint32_t ui0) const {

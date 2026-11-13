@@ -66,11 +66,19 @@ bool GraphicsShaderSource::validatePaths(
     std::string& geometryShaderName
 ) {
     if (!fs::exists(vertexShaderName)) {
-        LOG_FATAL("Graphics shader '%s' missing vertex shader at '%s'", m_path.c_str(), vertexShaderName.c_str());
+        LOG_FATAL(
+            "Graphics shader '%s' missing vertex shader at '%s'",
+            m_path.c_str(),
+            vertexShaderName.c_str()
+        );
         return false;
     }
     if (!fs::exists(fragmentShaderName)) {
-        LOG_FATAL("Graphics shader '%s' missing fragment shader at '%s'", m_path.c_str(), fragmentShaderName.c_str());
+        LOG_FATAL(
+            "Graphics shader '%s' missing fragment shader at '%s'",
+            m_path.c_str(),
+            fragmentShaderName.c_str()
+        );
         return false;
     }
     if (!fs::exists(geometryShaderName)) {

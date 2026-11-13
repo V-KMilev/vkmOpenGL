@@ -54,7 +54,9 @@ struct GraphicsShaderSource {
 
     /**
      * @brief Check existence of the shader source files.
-     *        If vertex/fragment is missing, returns false. Geometry is optional; if missing, returns true and clears the path.
+     *
+     * If vertex/fragment is missing, returns false. Geometry is optional; if missing, returns true
+     * and clears the path.
      *
      * @param vertexShaderName   Full path to the vertex shader file.
      * @param fragmentShaderName Full path to the fragment shader file.
@@ -71,7 +73,8 @@ struct GraphicsShaderSource {
     std::string              vertexShader;    ///< Source code for vertex shader
     std::string              fragmentShader;  ///< Source code for fragment shader
     std::string              geometryShader;  ///< Source code for geometry shader (optional)
-    std::vector<std::string> defines;         ///< Declared in every stage; kept so a reload declares them again
+    std::vector<std::string> defines;         ///< Declared in every stage; kept so a reload declares them
+                                              ///< again
 };
 
 /**
@@ -88,15 +91,16 @@ class Shader : public ShaderBase {
         Shader() = delete;
         ~Shader() override = default;
 
-        Shader(const Shader& shader) = delete;
-        Shader& operator=(const Shader& shader) = delete;
+        Shader(const Shader& other) = delete;
+        Shader& operator=(const Shader& other) = delete;
 
-        Shader(Shader && shader) noexcept = default;
-        Shader& operator=(Shader && shader) noexcept = default;
+        Shader(Shader && other) noexcept = default;
+        Shader& operator=(Shader && other) noexcept = default;
 
         /**
          * @brief Construct and load graphics shaders from the directory at path, declaring @p defines.
-         * @param path Path to the directory containing vertex.shader, fragment.shader, and optionally geometry.shader.
+         * @param path Path to the directory containing vertex.shader, fragment.shader, and optionally
+         *        geometry.shader.
          * @param defines Declared in every stage after the prelude, so one directory makes each variant of a
          *                program; the program's label names them after the directory's.
          * @throws std::runtime_error if shader source validation or compilation fails.

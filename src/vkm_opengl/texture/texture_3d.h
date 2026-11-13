@@ -18,7 +18,7 @@ struct Texture3DParams {
     uint32_t height = 0;                                    ///< Texture height
     uint32_t depth  = 0;                                    ///< Texture depth (slices)
 
-    GLenum internalFormat = GL_RGBA16F;                     ///< Internal format (must be image-load/store-able)
+    GLenum internalFormat = GL_RGBA16F;                     ///< Internal format; image-load/store-able
     GLenum format         = GL_RGBA;                        ///< Data format (for optional uploads)
     GLenum type           = GL_FLOAT;                       ///< Data type
 

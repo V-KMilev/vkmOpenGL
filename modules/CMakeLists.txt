@@ -8,12 +8,12 @@ set(GLEW_DIR  ${MODULES_DIR}/glew)
 # waiting to happen. Fail with the reason rather than with whatever error a missing
 # target produces three files later.
 foreach(_vkm_opengl_required glm vkm_log)
-	if(NOT TARGET ${_vkm_opengl_required})
-		message(FATAL_ERROR
-			"vkm_opengl requires the target '${_vkm_opengl_required}', which the consuming "
-			"project must add before add_subdirectory(vkmOpenGL). vkm_opengl vendors only "
-			"glew; see README.md.")
-	endif()
+    if(NOT TARGET ${_vkm_opengl_required})
+        message(FATAL_ERROR
+            "vkm_opengl requires the target '${_vkm_opengl_required}', which the consuming "
+            "project must add before add_subdirectory(vkmOpenGL). vkm_opengl vendors only "
+            "glew; see README.md.")
+    endif()
 endforeach()
 
 message("[VKM_OPENGL] Modules:")
@@ -78,7 +78,7 @@ endif()
 # Split so the path resolves against this tree while building and against an
 # installed prefix when vkm_opengl travels inside an SDK.
 target_include_directories(${PROJECT_NAME} PUBLIC
-	$<BUILD_INTERFACE:${GLEW_DIR}/include>
-	$<INSTALL_INTERFACE:include>
+    $<BUILD_INTERFACE:${GLEW_DIR}/include>
+    $<INSTALL_INTERFACE:include>
 )
 

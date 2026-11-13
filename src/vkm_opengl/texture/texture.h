@@ -104,9 +104,9 @@ GLenum toGLenum(TextureCompare compare);
  *
  * GL_TEXTURE_MAX_ANISOTROPY is only core from 4.6, above the version this
  * library needs (version.h), so it exists only when
- * GL_ARB_texture_filter_anisotropic or its EXT predecessor is present. Returns 1.0 when neither is, which is the value
- * meaning "no anisotropy" and lets callers degrade to plain trilinear without
- * a separate capability test.
+ * GL_ARB_texture_filter_anisotropic or its EXT predecessor is present. Returns
+ * 1.0 when neither is, which is the value meaning "no anisotropy" and lets
+ * callers degrade to plain trilinear without a separate capability test.
  *
  * Queried once on first call, so it needs a current context but costs nothing
  * after that.
@@ -131,7 +131,8 @@ struct Texture2DParams {
     TextureMinFilter minFilter = TextureMinFilter::LinearMipmapLinear;    ///< Minifying filter
     TextureMagFilter magFilter = TextureMagFilter::Linear;                ///< Magnification filter
 
-    float maxAnisotropy = 1.0f;                                           ///< Anisotropic filtering degree (1 = off); clamped to the driver's limit
+    float maxAnisotropy = 1.0f;                                           ///< Anisotropy, 1 off; clamped to
+                                                                          ///< the driver's limit
 
     bool generateMipmaps = true;                                          ///< Automatically generate mipmaps
     uint32_t levels      = 0;                                             ///< Levels; 0: see levelCount
