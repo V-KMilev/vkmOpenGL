@@ -168,7 +168,7 @@ class Buffer : public Object {
          * ShaderStorageBuffer as an SSBO with no per-subclass override. Only the
          * indexed targets accept this (uniform, shader-storage, atomic-counter,
          * transform-feedback); calling it on a vertex or index buffer is a GL
-         * error, which VKM_OPENGL_CHECK reports in debug builds.
+         * error, which VKM_OPENGL_CHECK reports when VKM_OPENGL_CHECKS is on.
          *
          * @param bindingPoint Index of the binding point the shader declares.
          */

@@ -1,3 +1,5 @@
+#define VKM_LOG_CATEGORY "SHADER"
+
 #include "vkm_opengl/shader/shader_reload.h"
 
 #include <algorithm>
@@ -132,9 +134,9 @@ uint32_t reloadChangedShaders(const std::string& directory) {
     }
 
     if (failed > 0) {
-        LOG_WARNING_C("SHADER", "Reloaded %u shader(s); %u kept their previous program", reloaded, failed);
+        LOG_WARNING("Reloaded %u shader(s); %u kept their previous program", reloaded, failed);
     } else {
-        LOG_INFO_C("SHADER", "Reloaded %u shader(s)", reloaded);
+        LOG_INFO("Reloaded %u shader(s)", reloaded);
     }
     return reloaded;
 }

@@ -39,9 +39,7 @@ Texture3D::~Texture3D() {
 Texture3D& Texture3D::operator=(Texture3D && other) noexcept {
     if (this != &other) {
         release();
-        // Through the base, like Texture2D's: Object owns the id and the two
-        // fields beside it (target, label namespace), and moving only the id by
-        // hand left those two describing the object that was overwritten.
+        // Through the base: Object owns the id and the two fields beside it.
         Object::operator=(std::move(other));
         m_name   = std::move(other.m_name);
         m_params = other.m_params;

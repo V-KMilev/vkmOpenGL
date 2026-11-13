@@ -8,9 +8,8 @@ namespace Vkm::OpenGL {
 /**
  * @brief Sampler object decoupling filter/wrap state from texture storage.
  *
- * Texture2D historically bakes wrap/filter into the texture object. A Sampler
- * holds that state separately and is bound to a texture unit independently
- * (glBindSampler), letting the same texture be sampled with different filters.
+ * A texture carries its own wrap and filter; a Sampler holds them apart and, bound to a
+ * texture unit (glBindSampler), overrides them, so one texture is sampled with different filters.
  * Mirrors the Vulkan VkSampler model.
  */
 class Sampler : public Object {

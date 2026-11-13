@@ -11,7 +11,7 @@
 namespace Vkm::OpenGL {
 
 /**
- * @brief Parameters for a 3D texture (e.g. a froxel volume or an SH probe grid).
+ * @brief Parameters for a 3D texture.
  */
 struct Texture3DParams {
     uint32_t width  = 0;                                    ///< Texture width
@@ -32,7 +32,7 @@ struct Texture3DParams {
  *
  * Storage is allocated at construction (contents undefined until written). A
  * compute shader writes it via bindImage(); graphics shaders sample it via
- * bindSlot(). Used for froxel volumetric data and volume textures generally.
+ * bindSlot().
  */
 class Texture3D : public Object {
     public:

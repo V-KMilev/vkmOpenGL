@@ -24,8 +24,7 @@ class RenderBuffer : public Object {
 
     public:
         /**
-         * @brief Binds this renderbuffer to GL_RENDERBUFFER.
-         *               glBindRenderbuffer accepts. Present for Object.
+         * @brief Bind this renderbuffer to GL_RENDERBUFFER.
          */
         void bind() const;
 

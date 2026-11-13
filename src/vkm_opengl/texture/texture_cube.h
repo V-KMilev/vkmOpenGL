@@ -17,11 +17,6 @@ namespace Vkm::OpenGL {
  * Owns a GL_TEXTURE_CUBE_MAP: allocate all six faces (+ optional mip chain),
  * generate mips, bind to a sampler slot. A face/mip is drawn into through
  * FrameBuffer::attachLayer, the face as the layer.
- *
- * An Object like every other handle-owning wrapper here, so the ownership
- * rules - non-copyable, movable, a moved-from object left empty - are the base's
- * rather than a fourth hand-written copy of them. That copy is where a move
- * forgets a member, which is a bug this module has had.
  */
 class TextureCube : public Object {
     public:

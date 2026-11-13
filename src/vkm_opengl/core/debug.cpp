@@ -29,7 +29,6 @@ namespace {
         (void)length;
         (void)userParam;
 
-        // Filter out noisy non-significant messages if desired
         if (severity == GL_DEBUG_SEVERITY_NOTIFICATION) {
             return;
         }

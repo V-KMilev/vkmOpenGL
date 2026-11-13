@@ -7,28 +7,8 @@ namespace Vkm::OpenGL {
 
 class ShaderBase;
 
-/**
- * @brief Development-time shader hot reload.
- *
- * A renderer constructs shaders all over - one per pass, say, and more for its
- * tools - and nothing owns them collectively, so there is no list to walk when
- * a source file changes. Every ShaderBase adds
- * itself here on construction, hands its place over when moved and removes
- * itself on destruction, which keeps that list correct without every call site
- * opting in. The same list says how many are still compiling (countShaders())
- * and checks them all (checkShaders()).
- *
- * Change detection is deliberately coarse: reloadChangedShaders() takes the
- * newest write time anywhere under the watched directory and recompiles
- * everything when it moves. Tracking per-shader file dependencies would be
- * finer, but shaders #include shared headers (a lighting or shadow helper is
- * pulled into most programs), so a precise implementation would end up
- * recompiling most of them anyway. Recompiling all of them takes long enough to
- * notice once and not long enough to care, and it cannot miss a dependency.
- *
- * Not thread-safe, and not meant to be: registration and reload both happen on
- * the thread that owns the GL context.
- */
+// The live shaders, for hot reload, counting and checking: every ShaderBase registers itself, and
+// the list is the context thread's alone. Why reload is coarse: docs/how-it-works.md, "Shaders".
 
 /**
  * @brief Add @p shader to the live set. Called by ShaderBase's constructor.
@@ -94,10 +74,8 @@ bool checkNextShader();
 /**
  * @brief Recompile every live shader if anything under @p directory changed.
  *
- * Cheap to call every frame: the common path is one directory walk and a
- * timestamp comparison. A shader whose source no longer compiles keeps its
- * previous program and logs the error, so a syntax error costs a red line in
- * the log rather than a broken renderer.
+ * Walks every file under @p directory for the newest write time, on the calling thread. A shader
+ * whose source no longer compiles keeps its previous program and logs the error.
  *
  * @param directory Root to watch, e.g. "shaders".
  * @return Number of shaders recompiled; 0 when nothing changed.

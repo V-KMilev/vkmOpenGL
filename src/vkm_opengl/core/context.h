@@ -88,8 +88,8 @@ struct RasterState {
 /**
  * @brief Core OpenGL context state manager and state change limiter.
  *
- * The Context class manages OpenGL state for depth, blending, face culling, scissor, viewport, and color clearing.
- * It reduces redundant state changes and allows centralized state alterations for performance.
+ * Caches the raster state it sets and skips a set that changes nothing; the viewport, the
+ * scissor rectangle and the set-once state pass straight through.
  */
 class Context {
     public:
@@ -135,12 +135,9 @@ class Context {
         /**
          * @brief Set the viewport region for rendering.
          *
-         * Deliberately uncached, unlike the toggles and modes below - hence
-         * const. Two reasons: the rectangle is set by code outside this class
-         * (a mip chain sizes the viewport to the level it is rendering into),
-         * so a cache here would go stale and start filtering out calls that
-         * were needed; and the frame is GPU-bound, where removing a handful of
-         * glViewport calls buys nothing measurable.
+         * Uncached, unlike the toggles and modes below - hence const: code
+         * outside this class sets the viewport too (a mip chain sizes it to the
+         * level it renders into), so a cache would go stale.
          *
          * @param x      Lower-left corner X coordinate.
          * @param y      Lower-left corner Y coordinate.

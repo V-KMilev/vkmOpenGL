@@ -8,13 +8,9 @@ namespace Vkm::OpenGL {
 /**
  * @brief Set the text prepended to every shader stage.
  *
- * Two things go in front of every stage and both are the same idea - something
- * the loader owns rather than something each file copies. The `#version` is
- * GLSL_VERSION (version.h) unless the caller asks for another. The constants come
- * from whoever is driving this: array capacities, grid dimensions, debug-mode
- * ordinals - values that live in the application's own code and would otherwise
- * be hand-copied into GLSL, or generated into it by a build step that has to
- * re-read the C++ to find them.
+ * The `#version` is GLSL_VERSION (version.h) unless the caller asks for another; the
+ * constants are the caller's, GLSL declarations of values its own code holds (array
+ * capacities, grid dimensions), so no shader file copies them.
  *
  * Applies to graphics and compute stages alike, since both go through
  * preprocessShaderSource. Call once at startup, before any shader is built.
@@ -30,12 +26,9 @@ void setShaderPrelude(int glslVersion, std::string constants = {});
  *        declared and `#include "rel.glsl"` directives resolved.
  *
  * GLSL has neither natively. Includes are inlined relative to the including
- * file's own directory and are cycle-safe; the directive itself is preserved as
- * a comment so compile errors inside an inlined body stay navigable. A stage
- * with no `#include` is returned verbatim.
- *
- * This is the single loader for every stage - graphics and compute alike - so
- * both share include support and one version source of truth.
+ * file's own directory, each file once per stage: a later include of it is skipped,
+ * so a cycle ends. The directive itself is kept as a comment, so a compile error
+ * inside an inlined body stays navigable.
  *
  * @param filePath Path to the shader stage file on disk.
  * @param defines  Names declared by `#define` after the prelude, in order: so

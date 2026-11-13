@@ -46,8 +46,7 @@ enum class TextureMagFilter : int {
  * A depth texture read through a `sampler2DShadow` returns the filtered
  * fraction of texels that passed a comparison rather than a depth. That is
  * sampler state rather than texture state, so the same depth texture can be
- * read both ways at once from two units - which is what a shadow atlas that is
- * both sampled for shadowing and visualized as an image needs.
+ * read both ways at once, from two units.
  */
 enum class TextureCompare {
     None,           ///< No comparison: the sampler returns the stored value

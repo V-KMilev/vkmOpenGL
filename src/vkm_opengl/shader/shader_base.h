@@ -83,12 +83,9 @@ class ShaderBase : public Object {
         /**
          * @brief Reload the sources from disk, keeping the working program on failure.
          *
-         * Builds the replacement first and adopts it only once it has linked, so
-         * a half-typed edit does not take the renderer down with it: the previous
-         * program stays bound-able and the error is logged for the next save to
-         * fix. Construction is the opposite case and behaves the opposite way -
-         * a shader that will not compile at startup throws, because a program
-         * that cannot draw should not start.
+         * Builds the replacement first and adopts it only once it links; on a
+         * failure the working program stays and the error is logged. Construction
+         * throws instead: a shader that does not build at startup has no program to keep.
          *
          * @return True if the new program linked and is now in use.
          */
@@ -188,11 +185,7 @@ class ShaderBase : public Object {
         void startLink(std::vector<uint32_t> stages);
 
         /**
-         * @brief Log a stage's compilation error, delete the stage, and throw.
-         *
-         * Never returns - the name says so, because a caller reading
-         * `printCompilationError(...)` would reasonably expect control to
-         * continue past it.
+         * @brief Log a stage's compilation error, delete the stage, and throw; never returns.
          *
          * @param type OpenGL shader stage enum.
          * @param id   Shader object ID (deleted before throwing).

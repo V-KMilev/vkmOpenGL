@@ -149,8 +149,7 @@ bool ShaderBase::tryRecompile() {
             VKM_OPENGL_CHECK(glDeleteProgram(m_id));
         }
         m_id = previous;
-        LOG_ERROR_C(
-            "SHADER",
+        LOG_ERROR(
             "Reload of '%s' failed, keeping the previous program: %s",
             m_name.c_str(),
             e.what()

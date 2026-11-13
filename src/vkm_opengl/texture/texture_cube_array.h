@@ -21,8 +21,6 @@ namespace Vkm::OpenGL {
  * index - so the layer count, not the texture-unit budget, bounds how many cubes
  * you can address. Bind to a sampler slot; one layer/face/mip is drawn into through
  * FrameBuffer::attachLayer, at layer * 6 + face.
- *
- * An Object, so its ownership rules are the base's; see TextureCube.
  */
 class TextureCubeArray : public Object {
     public:

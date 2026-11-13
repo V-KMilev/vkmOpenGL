@@ -11,14 +11,12 @@ project(
   LANGUAGES C CXX
 )
 
-# Set the C++ standard to 17
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 message("[VKM_OPENGL] Building vkm_opengl v${PROJECT_VERSION}")
 
-# Find OpenGL
 find_package(OpenGL REQUIRED)
 
 # Enumerated as one sweep rather than as a list: a list has to be edited to add
@@ -28,18 +26,14 @@ file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cp
 
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
 
-# The public surface is not annotated with __declspec(dllexport), so on Windows
-# CMake generates the export table from the object files instead - the same
-# property vkm_core carries, and for the same reason. Without it an MSVC build
-# links a DLL that exports nothing.
+# The public surface carries no __declspec(dllexport), so on Windows CMake generates the export
+# table from the object files; without it an MSVC build links a DLL that exports nothing.
 set_target_properties(${PROJECT_NAME} PROPERTIES
 	WINDOWS_EXPORT_ALL_SYMBOLS ON
 )
 
-# Warnings are on for our own sources only - the submodules under modules/ keep
-# their own level. The set is the engine's, so a file reads the same on either
-# side of the boundary. Clang reads the doc blocks: a @param naming no parameter
-# is an error.
+# Its warning set, for its own sources only: glew under modules/ keeps its own level. Clang reads
+# the doc blocks: a @param naming no parameter is an error.
 set(_vkm_opengl_warnings
 	-Wall
 	-Wextra

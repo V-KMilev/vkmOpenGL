@@ -299,10 +299,7 @@ void Texture2D::setFilter(TextureMinFilter minFilter, TextureMagFilter magFilter
 }
 
 void Texture2D::setMaxAnisotropy(float maxAnisotropy) {
-    // Store the clamped degree, not the raw request, so this compare answers
-    // "is the texture already filtered the way it was asked to be?" - callers
-    // re-apply the same level over every texture they own each frame, and it
-    // has to cost nothing when nothing moved.
+    // Stored clamped, so a request already met costs nothing.
     const float level = std::min(std::max(maxAnisotropy, 1.0f), maxSupportedAnisotropy());
     if (level == m_params.maxAnisotropy) return;
 
@@ -375,8 +372,7 @@ GLenum toGLenum(TextureCompare compare) {
 }
 
 float maxSupportedAnisotropy() {
-    // A driver constant, so it is asked for once. Without the cache the round
-    // trip would repeat for every texture uploaded, and a scene has thousands.
+    // A driver constant: asked once.
     static const float SUPPORTED = queryMaxAnisotropy();
     return SUPPORTED;
 }

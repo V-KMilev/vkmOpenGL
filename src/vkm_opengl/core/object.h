@@ -14,12 +14,9 @@ namespace Vkm::OpenGL {
  * wrapper can be returned by value or stored in a container. A move zeros the
  * source's m_id, which makes the moved-from destructor a no-op.
  *
- * Deliberately declares no bind()/unbind(). Nothing in the codebase holds a
- * Object by pointer or reference, so a virtual here dispatched nothing while
- * obliging every subclass to supply the same signature - which four of six
- * could not honor: a program, a VAO and a renderbuffer have no target to
- * select, and a sampler binds to a texture unit rather than a target at all.
- * Each subclass declares the binding call that suits it instead.
+ * Declares no bind(): a program and a vertex array have no target to select,
+ * and a sampler binds to a texture unit, so each class declares the binding
+ * call that suits it.
  */
 class Object {
     public:
@@ -60,9 +57,6 @@ class Object {
         void setLabel(const char* label);
 
     protected:
-        // Declared in constructor-parameter order: initializing out of that
-        // order is what the members are read in regardless, and -Wreorder
-        // flags the mismatch.
         GLenum   m_target;
         GLenum   m_identifier;
         uint32_t m_id;

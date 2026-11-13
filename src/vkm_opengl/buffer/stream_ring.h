@@ -19,8 +19,7 @@ namespace Vkm::OpenGL {
  * has finished the frame that last used it, and endFrame() fences it. So the CPU never writes
  * what the GPU still reads, never waits on the frame it is building, and the driver never has
  * to copy or rename a buffer to let a draw keep its old contents: what glBufferSubData into a
- * buffer in flight costs. Writes outside any frame - an offline bake, an editor preview - join
- * the region the next endFrame() fences.
+ * buffer in flight costs. Writes between frames join the region the next endFrame() fences.
  *
  * Spans are aligned for any use: a storage block's range, an instanced vertex stream, indirect
  * commands. A region too small for a frame doubles, into a new buffer; the old one is deleted
@@ -93,8 +92,8 @@ class StreamRing {
  * @brief Per-frame data the GPU reads many times a frame: written through a StreamRing, then
  *        copied once into a buffer in the GPU's own memory.
  *
- * A ring's memory may sit on the CPU's side of the bus, where every pass reading it - a
- * prepass, a forward pass, each shadow tile - fetches it across, and those fetches take
+ * A ring's memory may sit on the CPU's side of the bus, where every pass reading it fetches
+ * it across, and those fetches take
  * memory bandwidth from the CPU. One copy a frame, ordered after the last frame's reads, keeps
  * the ring's no-wait write and reads at video memory speed.
  */

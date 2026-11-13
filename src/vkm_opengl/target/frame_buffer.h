@@ -27,13 +27,13 @@ class FrameBuffer : public Object {
     public:
         /**
          * @brief Bind the framebuffer object.
-         * @param target Unused (default GL_NONE).
+         * @param target GL_DRAW_FRAMEBUFFER or GL_READ_FRAMEBUFFER; GL_NONE binds both.
          */
         void bind(GLenum target = GL_NONE) const;
 
         /**
          * @brief Unbind the framebuffer object.
-         * @param target Unused (default GL_NONE).
+         * @param target GL_DRAW_FRAMEBUFFER or GL_READ_FRAMEBUFFER; GL_NONE unbinds both.
          */
         void unbind(GLenum target = GL_NONE) const;
 
