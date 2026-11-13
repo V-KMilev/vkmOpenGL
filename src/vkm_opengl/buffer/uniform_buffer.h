@@ -19,6 +19,13 @@ class UniformBuffer : public Buffer {
             uint32_t size,
             GLenum usage = GL_STATIC_DRAW
         );
+        ~UniformBuffer() override = default;
+
+        UniformBuffer(const UniformBuffer& other) = delete;
+        UniformBuffer& operator=(const UniformBuffer& other) = delete;
+
+        UniformBuffer(UniformBuffer && other) noexcept = default;
+        UniformBuffer& operator=(UniformBuffer && other) noexcept = default;
 };
 
 } // namespace Vkm::OpenGL

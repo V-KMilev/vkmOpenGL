@@ -16,6 +16,13 @@ class VertexBuffer : public Buffer {
             uint32_t size,
             GLenum usage = GL_STATIC_DRAW
         );
+        ~VertexBuffer() override = default;
+
+        VertexBuffer(const VertexBuffer& other) = delete;
+        VertexBuffer& operator=(const VertexBuffer& other) = delete;
+
+        VertexBuffer(VertexBuffer && other) noexcept = default;
+        VertexBuffer& operator=(VertexBuffer && other) noexcept = default;
 };
 
 } // namespace Vkm::OpenGL

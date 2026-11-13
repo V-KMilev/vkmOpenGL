@@ -18,6 +18,13 @@ class IndexBuffer : public Buffer {
             GLenum type = GL_UNSIGNED_INT,
             GLenum usage = GL_STATIC_DRAW
         );
+        ~IndexBuffer() override = default;
+
+        IndexBuffer(const IndexBuffer& other) = delete;
+        IndexBuffer& operator=(const IndexBuffer& other) = delete;
+
+        IndexBuffer(IndexBuffer && other) noexcept = default;
+        IndexBuffer& operator=(IndexBuffer && other) noexcept = default;
 
     public:
         /**
