@@ -28,7 +28,7 @@ GraphicsShaderSource::GraphicsShaderSource(const std::string& path, std::vector<
     , fragmentShader()
     , geometryShader()
     , defines(std::move(defines_)) {
-    const std::string vertexShaderName = (fs::path(m_path) / "vertex.shader").string();
+    const std::string vertexShaderName   = (fs::path(m_path) / "vertex.shader").string();
     const std::string fragmentShaderName = (fs::path(m_path) / "fragment.shader").string();
     std::string geometryShaderName = (fs::path(m_path) / "geometry.shader").string();
 

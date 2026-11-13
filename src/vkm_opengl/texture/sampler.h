@@ -15,9 +15,9 @@ namespace Vkm::OpenGL {
 class Sampler : public Object {
     public:
         struct Params {
-            TextureWrap wrapS = TextureWrap::Repeat;
-            TextureWrap wrapT = TextureWrap::Repeat;
-            TextureWrap wrapR = TextureWrap::Repeat;
+            TextureWrap      wrapS     = TextureWrap::Repeat;
+            TextureWrap      wrapT     = TextureWrap::Repeat;
+            TextureWrap      wrapR     = TextureWrap::Repeat;
             TextureMinFilter minFilter = TextureMinFilter::LinearMipmapLinear;
             TextureMagFilter magFilter = TextureMagFilter::Linear;
             TextureCompare   compare   = TextureCompare::None;

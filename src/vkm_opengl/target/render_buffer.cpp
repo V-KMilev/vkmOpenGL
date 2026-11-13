@@ -52,14 +52,14 @@ int32_t RenderBuffer::getHeight() const {
 }
 
 void RenderBuffer::storage(GLenum internalFormat, int32_t width, int32_t height) {
-    m_width = width;
+    m_width  = width;
     m_height = height;
 
     VKM_OPENGL_CHECK(glNamedRenderbufferStorage(m_id, internalFormat, width, height));
 }
 
 void RenderBuffer::storageMultisample(int32_t samples, GLenum internalFormat, int32_t width, int32_t height) {
-    m_width = width;
+    m_width  = width;
     m_height = height;
 
     VKM_OPENGL_CHECK(glNamedRenderbufferStorageMultisample(m_id, samples, internalFormat, width, height));

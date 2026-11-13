@@ -40,7 +40,7 @@ std::string& preludeConstants() {
 std::string resolveIncludes(const fs::path& filePath, std::unordered_set<std::string>& visited) {
     std::error_code ec;
     const fs::path canonical = fs::weakly_canonical(filePath, ec);
-    const std::string key = ec ? filePath.string() : canonical.string();
+    const std::string key    = ec ? filePath.string() : canonical.string();
     if (!visited.insert(key).second) {
         return "// (skipped duplicate include: " + filePath.string() + ")\n";
     }

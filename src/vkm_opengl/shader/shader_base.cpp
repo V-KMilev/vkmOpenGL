@@ -314,8 +314,8 @@ void ShaderBase::listPlainUniforms() const {
     size_t most = 0;
     for (GLint i = 0; i < active; ++i) {
         char   name[256];
-        GLint  count = 0;
-        GLenum type  = 0;
+        GLint count = 0;
+        GLenum type = 0;
         const auto index = static_cast<GLuint>(i);
         VKM_OPENGL_CHECK(glGetActiveUniform(m_id, index, sizeof(name), nullptr, &count, &type, name));
         // A block's member has no location.
@@ -390,19 +390,19 @@ int32_t ShaderBase::locationToChange(const char* name, const void* value, uint32
 }
 
 void ShaderBase::setUniform4f(const char* uniformName, float f0, float f1, float f2, float f3) const {
-    const float values[] = {f0, f1, f2, f3};
+    const float values[]   = {f0, f1, f2, f3};
     const int32_t location = locationToChange(uniformName, &values, sizeof(values));
     if (location != -1) VKM_OPENGL_CHECK(glProgramUniform4f(m_id, location, f0, f1, f2, f3));
 }
 
 void ShaderBase::setUniform3f(const char* uniformName, float f0, float f1, float f2) const {
-    const float values[] = {f0, f1, f2};
+    const float values[]   = {f0, f1, f2};
     const int32_t location = locationToChange(uniformName, &values, sizeof(values));
     if (location != -1) VKM_OPENGL_CHECK(glProgramUniform3f(m_id, location, f0, f1, f2));
 }
 
 void ShaderBase::setUniform2f(const char* uniformName, float f0, float f1) const {
-    const float values[] = {f0, f1};
+    const float values[]   = {f0, f1};
     const int32_t location = locationToChange(uniformName, &values, sizeof(values));
     if (location != -1) VKM_OPENGL_CHECK(glProgramUniform2f(m_id, location, f0, f1));
 }

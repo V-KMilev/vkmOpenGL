@@ -119,27 +119,27 @@ float maxSupportedAnisotropy();
  * @brief Parameters for initializing a 2D texture.
  */
 struct Texture2DParams {
-    uint32_t width  = 0;                                                  ///< Texture width
-    uint32_t height = 0;                                                  ///< Texture height
+    uint32_t width  = 0;                                                ///< Texture width
+    uint32_t height = 0;                                                ///< Texture height
 
-    GLenum internalFormat = GL_RGBA8;                                     ///< Internal OpenGL format
-    GLenum format         = GL_RGBA;                                      ///< Data format
-    GLenum type           = GL_UNSIGNED_BYTE;                             ///< Data type
+    GLenum internalFormat = GL_RGBA8;                                   ///< Internal OpenGL format
+    GLenum format         = GL_RGBA;                                    ///< Data format
+    GLenum type           = GL_UNSIGNED_BYTE;                           ///< Data type
 
-    TextureWrap wrapS          = TextureWrap::ClampToEdge;                ///< S axis wrapping
-    TextureWrap wrapT          = TextureWrap::ClampToEdge;                ///< T axis wrapping
-    TextureMinFilter minFilter = TextureMinFilter::LinearMipmapLinear;    ///< Minifying filter
-    TextureMagFilter magFilter = TextureMagFilter::Linear;                ///< Magnification filter
+    TextureWrap      wrapS     = TextureWrap::ClampToEdge;              ///< S axis wrapping
+    TextureWrap      wrapT     = TextureWrap::ClampToEdge;              ///< T axis wrapping
+    TextureMinFilter minFilter = TextureMinFilter::LinearMipmapLinear;  ///< Minifying filter
+    TextureMagFilter magFilter = TextureMagFilter::Linear;              ///< Magnification filter
 
-    float maxAnisotropy = 1.0f;                                           ///< Anisotropy, 1 off; clamped to
-                                                                          ///< the driver's limit
+    float maxAnisotropy = 1.0f;                                         ///< Anisotropy, 1 off; clamped to
+                                                                        ///< the driver's limit
 
-    bool generateMipmaps = true;                                          ///< Automatically generate mipmaps
-    uint32_t levels      = 0;                                             ///< Levels; 0: see levelCount
-    const void* data     = nullptr;                                       ///< Pointer to initial data
+    bool        generateMipmaps = true;                                 ///< Automatically generate mipmaps
+    uint32_t    levels          = 0;                                    ///< Levels; 0: see levelCount
+    const void* data            = nullptr;                              ///< Pointer to initial data
 
     /// Samples a texel; above 1 a multisampled texture, which takes no pixels, levels or filter.
-    uint32_t samples     = 1;
+    uint32_t samples = 1;
 };
 
 /**

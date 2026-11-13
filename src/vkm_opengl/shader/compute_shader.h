@@ -26,8 +26,8 @@ struct ComputeShaderSource {
      */
     bool validatePath(const std::string& computeShaderName);
 
-    std::string m_path;           ///< Path to the containing directory of shader file
-    std::string computeShader;    ///< Source code for compute shader
+    std::string m_path;         ///< Path to the containing directory of shader file
+    std::string computeShader;  ///< Source code for compute shader
 };
 
 /**

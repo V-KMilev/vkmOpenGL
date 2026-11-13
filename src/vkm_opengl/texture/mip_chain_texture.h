@@ -74,7 +74,7 @@ class MipChainTexture : public Object {
             VKM_OPENGL_CHECK(glGenTextures(mips, m_levels.data()));
             for (int mip = 0; mip < mips; ++mip) {
                 const GLuint view = m_levels[static_cast<size_t>(mip)];
-                const auto level = static_cast<GLuint>(mip);
+                const auto level  = static_cast<GLuint>(mip);
                 VKM_OPENGL_CHECK(glTextureView(view, GL_TEXTURE_2D, m_id, internalFormat, level, 1, 0, 1));
                 setSampling(view, magFilter, magFilter);
             }
@@ -132,10 +132,10 @@ class MipChainTexture : public Object {
 
     private:
         std::vector<GLuint> m_levels;  ///< One single-level view per mip.
-        int    m_baseW  = 0;
-        int    m_baseH  = 0;
-        int    m_mips   = 1;
-        GLenum m_format = GL_RGBA16F;
+        int                 m_baseW  = 0;
+        int                 m_baseH  = 0;
+        int                 m_mips   = 1;
+        GLenum              m_format = GL_RGBA16F;
 };
 
 } // namespace Vkm::OpenGL

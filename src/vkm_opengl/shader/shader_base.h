@@ -204,7 +204,7 @@ class ShaderBase : public Object {
     private:
         /// What a setter last sent a location: a driver call is far dearer than comparing the bytes.
         struct SentValue {
-            std::array<uint32_t, 16> words{};  ///< Room for a mat4.
+            std::array<uint32_t, 16> words{};    ///< Room for a mat4.
             uint32_t                 bytes = 0;  ///< 0 is not known, as after a link or zeroUniforms().
         };
 

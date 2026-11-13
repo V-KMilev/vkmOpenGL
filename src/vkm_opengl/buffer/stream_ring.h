@@ -78,10 +78,10 @@ class StreamRing {
         GLuint   m_buffer      = 0;
         uint8_t* m_mapped      = nullptr;
         uint32_t m_regionBytes = 0;
-        uint32_t m_region      = 0;      ///< The region open, or last open.
-        uint32_t m_cursor      = 0;      ///< Bytes of it taken.
+        uint32_t m_region      = 0;        ///< The region open, or last open.
+        uint32_t m_cursor      = 0;        ///< Bytes of it taken.
         uint32_t m_alignment   = 256;
-        uint32_t m_frame       = 0;      ///< Frames ended.
+        uint32_t m_frame       = 0;        ///< Frames ended.
         bool     m_open        = false;
 
         std::array<Fence, FRAMES> m_fences;

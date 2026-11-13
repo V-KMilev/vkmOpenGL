@@ -16,8 +16,8 @@ namespace Vkm::OpenGL {
  * and whether values should be normalized when accessed.
  */
 struct VertexBufferElement {
-    GLenum type;
-    uint32_t count;
+    GLenum    type;
+    uint32_t  count;
     GLboolean normalized;
 
     /**
@@ -88,7 +88,7 @@ class VertexBufferLayout {
         void clear();
 
     private:
-        uint32_t m_stride;
+        uint32_t                         m_stride;
         std::vector<VertexBufferElement> m_elements;
 };
 

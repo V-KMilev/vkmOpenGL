@@ -12,28 +12,28 @@ namespace Vkm::OpenGL {
  * @brief Depth state configuration for OpenGL context.
  */
 struct DepthState {
-    bool enabled      = false;      ///< Enable/disable depth testing.
-    GLenum func       = GL_LESS;    ///< Depth comparison function (e.g., GL_LESS, GL_EQUAL).
-    bool writeEnabled = true;       ///< Enable/disable writing to depth buffer.
+    bool   enabled      = false;    ///< Enable/disable depth testing.
+    GLenum func         = GL_LESS;  ///< Depth comparison function (e.g., GL_LESS, GL_EQUAL).
+    bool   writeEnabled = true;     ///< Enable/disable writing to depth buffer.
 };
 
 /**
  * @brief Face culling state configuration for OpenGL context.
  */
 struct FaceCullState {
-    bool enabled     = false;      ///< Enable/disable face culling.
-    GLenum cullFace  = GL_BACK;    ///< Which face to cull (e.g., GL_BACK, GL_FRONT).
-    GLenum frontFace = GL_CCW;     ///< Vertex winding order considered front-facing.
+    bool   enabled   = false;    ///< Enable/disable face culling.
+    GLenum cullFace  = GL_BACK;  ///< Which face to cull (e.g., GL_BACK, GL_FRONT).
+    GLenum frontFace = GL_CCW;   ///< Vertex winding order considered front-facing.
 };
 
 /**
  * @brief Blending state configuration for OpenGL context.
  */
 struct BlendState {
-    bool enabled     = false;          ///< Enable/disable blending.
-    GLenum srcFactor = GL_ONE;         ///< Source blend factor.
-    GLenum dstFactor = GL_ZERO;        ///< Destination blend factor.
-    GLenum equation  = GL_FUNC_ADD;    ///< Blend equation/mode.
+    bool   enabled   = false;        ///< Enable/disable blending.
+    GLenum srcFactor = GL_ONE;       ///< Source blend factor.
+    GLenum dstFactor = GL_ZERO;      ///< Destination blend factor.
+    GLenum equation  = GL_FUNC_ADD;  ///< Blend equation/mode.
 };
 
 /**
@@ -42,14 +42,14 @@ struct BlendState {
  *        driver starts in.
  */
 struct StencilState {
-    bool   enabled   = false;               ///< Enable/disable stencil test.
-    GLenum func      = GL_ALWAYS;           ///< Comparison function.
-    GLint  ref       = 0;                   ///< Reference value.
-    GLuint funcMask  = 0xFFFFFFFFu;         ///< Mask AND-ed with ref and stencil during test.
-    GLenum sfail     = GL_KEEP;             ///< Op when stencil test fails.
-    GLenum dpfail    = GL_KEEP;             ///< Op when stencil passes, depth fails.
-    GLenum dppass    = GL_KEEP;             ///< Op when stencil and depth pass.
-    GLuint writeMask = 0xFFFFFFFFu;         ///< Bits writable in the stencil buffer.
+    bool   enabled   = false;        ///< Enable/disable stencil test.
+    GLenum func      = GL_ALWAYS;    ///< Comparison function.
+    GLint  ref       = 0;            ///< Reference value.
+    GLuint funcMask  = 0xFFFFFFFFu;  ///< Mask AND-ed with ref and stencil during test.
+    GLenum sfail     = GL_KEEP;      ///< Op when stencil test fails.
+    GLenum dpfail    = GL_KEEP;      ///< Op when stencil passes, depth fails.
+    GLenum dppass    = GL_KEEP;      ///< Op when stencil and depth pass.
+    GLuint writeMask = 0xFFFFFFFFu;  ///< Bits writable in the stencil buffer.
 };
 
 /**
@@ -66,23 +66,23 @@ struct ColorMaskState {
  * @brief Raster (pipeline) state: depth, culling, blending and the rest Context caches.
  */
 struct RasterState {
-    DepthState     depth;            ///< Depth state.
-    FaceCullState  cull;             ///< Face culling state.
-    BlendState     blend;            ///< Blending state.
-    StencilState   stencil;          ///< Stencil test + write state.
-    ColorMaskState colorMask;        ///< Per-channel color write mask.
-    bool colorMaskSplit = false;     ///< A draw buffer's mask was set apart from colorMask.
-    GLenum polygonMode = GL_FILL;    ///< Polygon mode (e.g., GL_FILL, GL_LINE).
-    bool scissorEnabled = false;     ///< Enable/disable scissor test.
+    DepthState     depth;                     ///< Depth state.
+    FaceCullState  cull;                      ///< Face culling state.
+    BlendState     blend;                     ///< Blending state.
+    StencilState   stencil;                   ///< Stencil test + write state.
+    ColorMaskState colorMask;                 ///< Per-channel color write mask.
+    bool           colorMaskSplit = false;    ///< A draw buffer's mask was set apart from colorMask.
+    GLenum         polygonMode    = GL_FILL;  ///< Polygon mode (e.g., GL_FILL, GL_LINE).
+    bool           scissorEnabled = false;    ///< Enable/disable scissor test.
 
-    bool     alphaToCoverage = false;     ///< Alpha read as multisample coverage.
-    bool     depthClamp      = false;     ///< Depth clamped to the range rather than clipped.
-    uint32_t clipDistances   = 0;         ///< Bit i: user clip plane i on.
-    bool     offsetFill      = false;     ///< Polygon offset on filled polygons.
-    bool     offsetLine      = false;     ///< On lines.
-    bool     offsetPoint     = false;     ///< On points.
-    float    offsetFactor    = 0.0f;      ///< Polygon offset's slope factor.
-    float    offsetUnits     = 0.0f;      ///< Its constant, in depth units.
+    bool     alphaToCoverage = false;  ///< Alpha read as multisample coverage.
+    bool     depthClamp      = false;  ///< Depth clamped to the range rather than clipped.
+    uint32_t clipDistances   = 0;      ///< Bit i: user clip plane i on.
+    bool     offsetFill      = false;  ///< Polygon offset on filled polygons.
+    bool     offsetLine      = false;  ///< On lines.
+    bool     offsetPoint     = false;  ///< On points.
+    float    offsetFactor    = 0.0f;   ///< Polygon offset's slope factor.
+    float    offsetUnits     = 0.0f;   ///< Its constant, in depth units.
 };
 
 /**

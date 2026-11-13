@@ -93,7 +93,7 @@ class MappedBuffer {
 
     private:
         const Buffer* m_buffer;
-        void*           m_data;
+        void*         m_data;
 };
 
 /**

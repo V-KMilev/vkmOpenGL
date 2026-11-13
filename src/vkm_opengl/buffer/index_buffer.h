@@ -62,7 +62,7 @@ class IndexBuffer : public Buffer {
 
     private:
         uint32_t m_count;
-        GLenum m_type;
+        GLenum   m_type;
 };
 
 } // namespace Vkm::OpenGL
