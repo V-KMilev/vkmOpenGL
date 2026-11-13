@@ -5,6 +5,8 @@
 #include "vkm_log/assert.h"
 #include "vkm_log/logger.h"
 
+namespace Vkm::OpenGL {
+
 void checkGLError(
     const char* file,
     int line,
@@ -27,3 +29,5 @@ void checkGLError(
 
     if (failed) Vkm::Log::stopProgram();
 }
+
+} // namespace Vkm::OpenGL

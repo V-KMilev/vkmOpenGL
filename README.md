@@ -3,7 +3,7 @@
 OpenGL objects and state for a renderer that makes no `gl*` call of its own.
 Every GL object - program, texture, buffer, vertex array, framebuffer, fence - is
 a class here, edited by name through direct state access; pipeline state goes
-through `Context`'s cache; every call is under `VKM_OPENGL_CHECK`.
+through `Context`'s cache; every call after `load()` is under `VKM_OPENGL_CHECK`.
 
 ## Requirements
 

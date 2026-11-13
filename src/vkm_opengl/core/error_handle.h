@@ -2,6 +2,8 @@
 
 #include <GL/glew.h>
 
+namespace Vkm::OpenGL {
+
 /**
  * @brief Drain the OpenGL error queue, logging each error, and stop the program if there was any.
  *
@@ -18,6 +20,8 @@ void checkGLError(
     int line,
     const char* function
 );
+
+} // namespace Vkm::OpenGL
 
 /**
  * @brief Run an OpenGL call and check the error queue immediately after it.
@@ -40,10 +44,10 @@ void checkGLError(
  * @param GL_CALL The OpenGL call to execute and check.
  */
 #ifdef VKM_OPENGL_CHECKS
-    #define VKM_OPENGL_CHECK(GL_CALL)                       \
-        do {                                                \
-            GL_CALL;                                        \
-            checkGLError(__FILE__, __LINE__, __FUNCTION__); \
+    #define VKM_OPENGL_CHECK(GL_CALL)                                      \
+        do {                                                               \
+            GL_CALL;                                                       \
+            ::Vkm::OpenGL::checkGLError(__FILE__, __LINE__, __FUNCTION__); \
         } while (0)
 #else
     #define VKM_OPENGL_CHECK(GL_CALL) \
