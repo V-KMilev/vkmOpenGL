@@ -1,5 +1,7 @@
 #include "vkm_opengl/texture/texture_3d.h"
 
+#include "vkm_log/assert.h"
+
 #include "vkm_opengl/core/error_handle.h"
 
 namespace Vkm::OpenGL {
@@ -9,6 +11,8 @@ Texture3D::Texture3D(const std::string& name, const Texture3DParams& params)
     , m_name(name)
     , m_params(params) {
     VKM_OPENGL_CHECK(glCreateTextures(GL_TEXTURE_3D, 1, &m_id));
+    VKM_ASSERT(m_id != 0);
+    setLabel(m_name.c_str());
     VKM_OPENGL_CHECK(glTextureStorage3D(
         m_id,
         1,
