@@ -11,7 +11,6 @@ namespace Vkm::OpenGL {
 constexpr int MAJOR_VERSION = 4;
 constexpr int MINOR_VERSION = 5;  ///< See MAJOR_VERSION.
 
-/// The GLSL version that goes with it, in GLSL's integer form: 450 for 4.5.
-constexpr int GLSL_VERSION = MAJOR_VERSION * 100 + MINOR_VERSION * 10;
+constexpr int GLSL_VERSION = MAJOR_VERSION * 100 + MINOR_VERSION * 10;  ///< In GLSL's form: 450 for 4.5.
 
 } // namespace Vkm::OpenGL

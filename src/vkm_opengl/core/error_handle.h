@@ -15,11 +15,7 @@ namespace Vkm::OpenGL {
  * @param line     Line number in that file.
  * @param function Name of the enclosing function.
  */
-void checkGLError(
-    const char* file,
-    int line,
-    const char* function
-);
+void checkGLError(const char* file, int line, const char* function);
 
 } // namespace Vkm::OpenGL
 

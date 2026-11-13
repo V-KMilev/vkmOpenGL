@@ -32,11 +32,7 @@ GraphicsShaderSource::GraphicsShaderSource(const std::string& path, std::vector<
     const std::string fragmentShaderName = (fs::path(m_path) / "fragment.shader").string();
     std::string geometryShaderName = (fs::path(m_path) / "geometry.shader").string();
 
-    if (!validatePaths(
-        vertexShaderName,
-        fragmentShaderName,
-        geometryShaderName
-    )) {
+    if (!validatePaths(vertexShaderName, fragmentShaderName, geometryShaderName)) {
         throw std::runtime_error("Graphics shader source validation failed");
     }
 

@@ -11,11 +11,7 @@ namespace Vkm::OpenGL {
  */
 class VertexBuffer : public Buffer {
     public:
-        VertexBuffer(
-            const void* data,
-            uint32_t size,
-            GLenum usage = GL_STATIC_DRAW
-        );
+        VertexBuffer(const void* data, uint32_t size, GLenum usage = GL_STATIC_DRAW);
         ~VertexBuffer() override = default;
 
         VertexBuffer(const VertexBuffer& other) = delete;

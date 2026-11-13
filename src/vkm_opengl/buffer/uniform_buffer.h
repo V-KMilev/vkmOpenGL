@@ -14,11 +14,7 @@ namespace Vkm::OpenGL {
  */
 class UniformBuffer : public Buffer {
     public:
-        UniformBuffer(
-            const void* data,
-            uint32_t size,
-            GLenum usage = GL_STATIC_DRAW
-        );
+        UniformBuffer(const void* data, uint32_t size, GLenum usage = GL_STATIC_DRAW);
         ~UniformBuffer() override = default;
 
         UniformBuffer(const UniformBuffer& other) = delete;

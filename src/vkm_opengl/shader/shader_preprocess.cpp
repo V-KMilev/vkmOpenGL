@@ -57,8 +57,7 @@ std::string resolveIncludes(const fs::path& filePath, std::unordered_set<std::st
     while (std::getline(in, line)) {
         // Only a leading `#include` token is a directive (not one in a comment).
         size_t firstNonWS = 0;
-        while (firstNonWS < line.size() &&
-               (line[firstNonWS] == ' ' || line[firstNonWS] == '\t')) {
+        while (firstNonWS < line.size() && (line[firstNonWS] == ' ' || line[firstNonWS] == '\t')) {
             ++firstNonWS;
         }
         if (line.compare(firstNonWS, 8, "#include") == 0) {

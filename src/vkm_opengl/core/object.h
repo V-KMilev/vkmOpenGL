@@ -31,11 +31,7 @@ class Object {
         virtual ~Object() = default;
 
     protected:
-        Object(
-            GLenum target,
-            GLenum identifier,
-            uint32_t id
-        );
+        Object(GLenum target, GLenum identifier, uint32_t id);
 
     public:
         /**

@@ -12,7 +12,9 @@ namespace Vkm::OpenGL {
 
 class Buffer;
 
-/// How a vertex attribute's stored values reach the shader.
+/**
+ * @brief How a vertex attribute's stored values reach the shader.
+ */
 enum class AttributeKind {
     Float,       ///< Converted to float as they are: a float, or an integer's value.
     Normalized,  ///< An integer mapped to 0..1 (unsigned) or -1..1 (signed).
@@ -209,7 +211,9 @@ class VertexArray : public Object {
         void multiDrawArrays(GLenum mode, const int32_t* firsts, const int32_t* counts, int32_t draws) const;
 
     private:
-        /// What a binding was last fed from, as setVertexBuffer() set it.
+        /**
+         * @brief What a binding was last fed from, as setVertexBuffer() set it.
+         */
         struct Feed {
             GLuint   buffer  = 0;
             uint32_t offset  = 0;
@@ -218,8 +222,8 @@ class VertexArray : public Object {
             bool     set     = false;
         };
 
-        /// GL guarantees at least this many bindings; a higher one is fed every time.
-        static constexpr uint32_t REMEMBERED_FEEDS = 16;
+        static constexpr uint32_t REMEMBERED_FEEDS = 16;  ///< GL guarantees at least this many bindings; a
+                                                          ///< higher one is fed every time.
 
     private:
         /**

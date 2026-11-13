@@ -9,12 +9,7 @@ void Context::setClearColor(const glm::vec4& color) {
 }
 
 void Context::clearColor() const {
-    VKM_OPENGL_CHECK(glClearColor(
-        m_clearColor[0],
-        m_clearColor[1],
-        m_clearColor[2],
-        m_clearColor[3]
-    ));
+    VKM_OPENGL_CHECK(glClearColor(m_clearColor[0], m_clearColor[1], m_clearColor[2], m_clearColor[3]));
 }
 
 void Context::clear(bool color, bool depth, bool stencil, float depthValue) const {
@@ -171,8 +166,8 @@ void Context::setColorMask(uint32_t drawBuffer, bool r, bool g, bool b, bool a) 
 
 namespace {
 
-/// User clip planes setDefaultState() resets: the least GL_MAX_CLIP_DISTANCES can be.
-constexpr uint32_t CLIP_PLANES = 8;
+constexpr uint32_t CLIP_PLANES = 8;  ///< User clip planes setDefaultState() resets: the least
+                                     ///< GL_MAX_CLIP_DISTANCES can be.
 
 // Turn @p capability on or off when @p cached says otherwise, and remember it.
 void toggle(bool& cached, GLenum capability, bool enable) {

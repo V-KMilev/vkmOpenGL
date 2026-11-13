@@ -13,10 +13,11 @@ namespace Vkm::OpenGL {
 
 namespace {
 
-// One context, drawn from one thread: what each sampler unit holds as vkmOpenGL last bound it. GL
-// guarantees 80 units; one past them is bound every time.
-constexpr GLuint REMEMBERED_UNITS = 80;
-std::array<GLuint, REMEMBERED_UNITS> g_units{};
+constexpr GLuint REMEMBERED_UNITS = 80;  ///< Sampler units remembered: GL guarantees 80; one past them is
+                                         ///< bound every time.
+
+std::array<GLuint, REMEMBERED_UNITS> g_units{};  ///< What each unit holds as vkmOpenGL last bound it, for
+                                                 ///< one context drawn from one thread.
 
 } // namespace
 

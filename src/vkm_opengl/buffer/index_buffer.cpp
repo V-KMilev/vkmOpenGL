@@ -15,14 +15,10 @@ namespace {
     }
 }
 
-IndexBuffer::IndexBuffer(
-    const void* data,
-    uint32_t count,
-    GLenum type,
-    GLenum usage
-) : Buffer(GL_ELEMENT_ARRAY_BUFFER, data, count * getTypeSize(type), usage),
-    m_count(count),
-    m_type(type)
+IndexBuffer::IndexBuffer(const void* data, uint32_t count, GLenum type, GLenum usage)
+    : Buffer(GL_ELEMENT_ARRAY_BUFFER, data, count * getTypeSize(type), usage)
+    , m_count(count)
+    , m_type(type)
 {}
 
 uint32_t IndexBuffer::getCount() const {

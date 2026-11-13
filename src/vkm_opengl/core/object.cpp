@@ -4,13 +4,10 @@
 
 namespace Vkm::OpenGL {
 
-Object::Object(
-    GLenum target,
-    GLenum identifier,
-    uint32_t id
-) : m_target(target)
-  , m_identifier(identifier)
-  , m_id(id) {}
+Object::Object(GLenum target, GLenum identifier, uint32_t id)
+    : m_target(target)
+    , m_identifier(identifier)
+    , m_id(id) {}
 
 Object::Object(Object && other) noexcept
     : m_target(other.m_target)

@@ -93,9 +93,9 @@ namespace {
 /// Whether compileInParallel() found the driver's threads.
 bool g_parallel = false;
 
-/// The driver's threads compileInParallel() asks for. With more, a driver measured corrupted the heap
-/// when a start found some programs in its disk cache and compiled several anew.
-constexpr GLuint COMPILER_THREADS = 2;
+constexpr GLuint COMPILER_THREADS = 2;  ///< The driver's threads compileInParallel() asks for. With more, a
+                                        ///< driver measured corrupted the heap when a start found some
+                                        ///< programs in its disk cache and compiled several anew.
 
 } // namespace
 
@@ -149,11 +149,7 @@ bool ShaderBase::tryRecompile() {
             VKM_OPENGL_CHECK(glDeleteProgram(m_id));
         }
         m_id = previous;
-        LOG_ERROR(
-            "Reload of '%s' failed, keeping the previous program: %s",
-            m_name.c_str(),
-            e.what()
-        );
+        LOG_ERROR("Reload of '%s' failed, keeping the previous program: %s", m_name.c_str(), e.what());
         return false;
     }
 

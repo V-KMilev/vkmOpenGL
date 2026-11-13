@@ -138,8 +138,8 @@ struct Texture2DParams {
     uint32_t    levels          = 0;                                    ///< Levels; 0: see levelCount
     const void* data            = nullptr;                              ///< Pointer to initial data
 
-    /// Samples a texel; above 1 a multisampled texture, which takes no pixels, levels or filter.
-    uint32_t samples = 1;
+    uint32_t samples = 1;  ///< Samples a texel; above 1 a multisampled texture, which takes no pixels, levels
+                           ///< or filter.
 };
 
 /**
@@ -207,10 +207,7 @@ class Texture2D : public Object {
         Texture2D(Texture2D && other) noexcept = default;
         Texture2D& operator=(Texture2D && other) noexcept;
 
-        explicit Texture2D(
-            const std::string& name,
-            const Texture2DParams& params
-        );
+        explicit Texture2D(const std::string& name, const Texture2DParams& params);
 
     public:
         /**
@@ -371,8 +368,9 @@ class Texture2D : public Object {
         void applyParameters() const;
 
     private:
-        std::string          m_name;     ///< Debug label, for GL object naming and logs.
-        Texture2DParams      m_params;
+        std::string     m_name;  ///< Debug label, for GL object naming and logs.
+        Texture2DParams m_params;
+
         std::array<GLint, 4> m_swizzle = {GL_RED, GL_GREEN, GL_BLUE, GL_ALPHA};  ///< See setSwizzle().
 };
 

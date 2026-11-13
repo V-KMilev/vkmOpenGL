@@ -202,13 +202,17 @@ class ShaderBase : public Object {
         int32_t getUniformLocation(const char* name) const;
 
     private:
-        /// What a setter last sent a location: a driver call is far dearer than comparing the bytes.
+        /**
+         * @brief What a setter last sent a location: a driver call is far dearer than comparing the bytes.
+         */
         struct SentValue {
             std::array<uint32_t, 16> words{};    ///< Room for a mat4.
             uint32_t                 bytes = 0;  ///< 0 is not known, as after a link or zeroUniforms().
         };
 
-        /// A uniform zeroUniforms() sets.
+        /**
+         * @brief A uniform zeroUniforms() sets.
+         */
         struct PlainUniform {
             int32_t  location = -1;
             int32_t  count    = 0;  ///< Its array's length, 1 for a single value.
@@ -268,14 +272,16 @@ class ShaderBase : public Object {
         std::string m_name;
         std::string m_path;
 
-        /// Backs the cache keys; a deque's addresses stay put as it grows.
-        mutable std::deque<std::string> m_uniformNames;
+        mutable std::deque<std::string> m_uniformNames;  ///< Backs the cache keys; a deque's addresses stay
+                                                         ///< put as it grows.
 
-        /// Name -> location, keyed by view so a literal hashes without allocating.
-        mutable std::unordered_map<std::string_view, int32_t> m_uniformLocationCache;
+        mutable std::unordered_map<std::string_view, int32_t> m_uniformLocationCache;  ///< Name to location,
+                                                                                       ///< keyed by view so a
+                                                                                       ///< literal hashes
+                                                                                       ///< without
+                                                                                       ///< allocating.
 
-        /// By location: what each holds, as far as the setters know.
-        mutable std::vector<SentValue> m_sent;
+        mutable std::vector<SentValue> m_sent;  ///< By location: what each holds, as setters know.
 
         // What zeroUniforms() sets, listed on first use after a link, and zeros for the largest.
         mutable std::vector<PlainUniform> m_plain;
@@ -283,8 +289,8 @@ class ShaderBase : public Object {
         mutable std::vector<float>        m_zeros;
         mutable std::vector<uint32_t>     m_intZeros;  ///< Read as signed and unsigned alike.
 
-        /// The stages of a program not yet checked; empty once finishLink() ran.
-        mutable std::vector<uint32_t> m_stages;
+        mutable std::vector<uint32_t> m_stages;  ///< The stages of a program not yet checked; empty once
+                                                 ///< finishLink() ran.
 };
 
 } // namespace Vkm::OpenGL

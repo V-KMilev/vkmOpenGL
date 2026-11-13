@@ -129,10 +129,9 @@ class Shader : public ShaderBase {
         void reloadSource() override;
 
     protected:
-        /// Visible to subclasses so they can override reloadSource() and
-        /// install a freshly-prepared source (e.g. re-running an include
-        /// preprocessor) without going through the base path-based loader.
-        GraphicsShaderSource m_source;
+        GraphicsShaderSource m_source;  ///< Visible to subclasses so they can override reloadSource() and
+                                        ///< install a freshly-prepared source (e.g. re-running an include
+                                        ///< preprocessor) without going through the base path-based loader.
 };
 
 } // namespace Vkm::OpenGL

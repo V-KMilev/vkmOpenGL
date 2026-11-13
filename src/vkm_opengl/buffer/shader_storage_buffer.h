@@ -14,11 +14,7 @@ namespace Vkm::OpenGL {
  */
 class ShaderStorageBuffer : public Buffer {
     public:
-        ShaderStorageBuffer(
-            const void* data,
-            uint32_t size,
-            GLenum usage = GL_DYNAMIC_DRAW
-        );
+        ShaderStorageBuffer(const void* data, uint32_t size, GLenum usage = GL_DYNAMIC_DRAW);
         ~ShaderStorageBuffer() override = default;
 
         ShaderStorageBuffer(const ShaderStorageBuffer& other) = delete;

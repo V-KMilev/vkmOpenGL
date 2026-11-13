@@ -7,11 +7,7 @@
 
 namespace Vkm::OpenGL {
 
-void checkGLError(
-    const char* file,
-    int line,
-    const char* function
-) {
+void checkGLError(const char* file, int line, const char* function) {
     // GL holds a queue, not a single flag: reading one error clears only that
     // entry. Draining it here keeps an error attributed to the call that
     // actually produced it instead of the next checked call downstream.

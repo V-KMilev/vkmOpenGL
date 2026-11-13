@@ -38,14 +38,10 @@ uint64_t deletedBuffers() {
     return g_deletedBuffers;
 }
 
-Buffer::Buffer(
-    GLenum target,
-    const void* data,
-    uint32_t size,
-    GLenum usage
-) : Object(target, GL_BUFFER, 0),
-    m_size(size),
-    m_usage(usage)
+Buffer::Buffer(GLenum target, const void* data, uint32_t size, GLenum usage)
+    : Object(target, GL_BUFFER, 0)
+    , m_size(size)
+    , m_usage(usage)
 {
     VKM_OPENGL_CHECK(glCreateBuffers(1, &m_id));
     VKM_ASSERT(m_id != 0);

@@ -31,7 +31,9 @@ void unregisterShader(ShaderBase* shader);
  */
 void handOverShader(ShaderBase* from, ShaderBase* to);
 
-/// How many shaders are live, how many the driver is still compiling, and how many are unchecked.
+/**
+ * @brief How many shaders are live, how many the driver is still compiling, and how many are unchecked.
+ */
 struct ShaderCount {
     uint32_t live      = 0;
     uint32_t compiling = 0;  ///< Not ShaderBase::ready().

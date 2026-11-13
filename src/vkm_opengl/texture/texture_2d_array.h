@@ -26,12 +26,11 @@ struct Texture2DArrayParams {
     TextureMinFilter minFilter = TextureMinFilter::Linear;  ///< Minifying filter
     TextureMagFilter magFilter = TextureMagFilter::Linear;  ///< Magnification filter
 
-    /// Anisotropic degree (1 = off); clamped to the driver's limit.
-    float maxAnisotropy = 1.0f;
+    float maxAnisotropy = 1.0f;  ///< Anisotropic degree (1 = off); clamped to the driver's limit.
 
-    /// Sampled through a view in this format - an sRGB read of an RGBA8 storage a shader
-    /// writes - rather than the storage's own; GL_NONE samples the storage.
-    GLenum viewFormat = GL_NONE;
+    GLenum viewFormat = GL_NONE;  ///< Sampled through a view in this format - an sRGB read of an RGBA8
+                                  ///< storage a shader writes - rather than the storage's own; GL_NONE
+                                  ///< samples the storage.
 };
 
 /**

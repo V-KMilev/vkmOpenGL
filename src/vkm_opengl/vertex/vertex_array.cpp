@@ -119,12 +119,7 @@ void VertexArray::setAttribute(
     VKM_OPENGL_CHECK(glVertexArrayAttribBinding(m_id, index, binding));
 }
 
-void VertexArray::setVertexBuffer(
-    uint32_t binding,
-    const Buffer& buffer,
-    uint32_t offset,
-    uint32_t stride
-) {
+void VertexArray::setVertexBuffer(uint32_t binding, const Buffer& buffer, uint32_t offset, uint32_t stride) {
     setVertexBuffer(binding, BufferSpan{buffer.getID(), offset, buffer.getSize()}, stride);
 }
 
