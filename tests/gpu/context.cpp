@@ -5,6 +5,7 @@
 
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
+#include <GL/glew.h>
 
 #include "vkm_opengl/core/load.h"
 #include "vkm_opengl/core/version.h"
@@ -70,15 +71,45 @@ std::string makeContext() {
 
 } // namespace
 
+void missing(const std::string& why) {
+    const char* required = std::getenv("VKM_GPU_REQUIRED");
+    if (!required || std::strcmp(required, "1") != 0) skip(why);
+    fail(__FILE__, __LINE__, "VKM_GPU_REQUIRED=1, and " + why);
+    throw Stop{};
+}
+
 void requireContext() {
     // The process's one context, kept until it ends: each test runs in a process of its own.
     static const std::string s_missing = makeContext();
-    if (s_missing.empty()) return;
+    if (!s_missing.empty()) missing(s_missing);
+}
 
-    const char* required = std::getenv("VKM_GPU_REQUIRED");
-    if (!required || std::strcmp(required, "1") != 0) skip(s_missing);
-    fail(__FILE__, __LINE__, "VKM_GPU_REQUIRED=1, and " + s_missing);
-    throw Stop{};
+void requireDefaultFramebuffer(int width, int height) {
+    requireContext();
+    const EGLDisplay display = eglGetCurrentDisplay();
+    const EGLint config[] = {
+        EGL_SURFACE_TYPE,    EGL_PBUFFER_BIT,
+        EGL_RENDERABLE_TYPE, EGL_OPENGL_BIT,
+        EGL_RED_SIZE,        8,
+        EGL_GREEN_SIZE,      8,
+        EGL_BLUE_SIZE,       8,
+        EGL_ALPHA_SIZE,      8,
+        EGL_NONE,
+    };
+    EGLConfig chosen = nullptr;
+    EGLint    count  = 0;
+    if (!eglChooseConfig(display, config, &chosen, 1, &count) || count == 0) {
+        missing("the EGL device has no RGBA8 pbuffer config");
+    }
+    const EGLint size[] = {EGL_WIDTH, width, EGL_HEIGHT, height, EGL_NONE};
+    const EGLSurface surface = eglCreatePbufferSurface(display, chosen, size);
+    if (surface == EGL_NO_SURFACE) missing("the EGL device makes no pbuffer");
+    if (!eglMakeCurrent(display, surface, surface, eglGetCurrentContext())) {
+        missing("the context cannot be made current with a pbuffer");
+    }
+    // First made current with no surface, the context draws to and reads from no buffer until told.
+    glDrawBuffer(GL_BACK);
+    glReadBuffer(GL_BACK);
 }
 
 } // namespace Vkm::Test
