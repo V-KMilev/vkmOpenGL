@@ -24,7 +24,7 @@ struct GraphicsShaderSource {
      * Reads vertex.shader, fragment.shader, and optionally geometry.shader,
      * running each through preprocessShaderSource so `#include "rel.glsl"`
      * directives are inlined (relative to the including file). A stage with no
-     * #include is read verbatim but for the prelude and @p defines. For other
+     * `#include` is read verbatim but for the prelude and @p defines. For other
      * preprocessing construct the struct directly with prepared source strings.
      *
      * @param path    The directory the stages are in.
