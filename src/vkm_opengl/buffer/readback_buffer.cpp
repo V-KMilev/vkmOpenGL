@@ -53,7 +53,7 @@ void ReadbackBuffer::release() noexcept {
     if (m_id == 0) return;
     if (m_data != nullptr) VKM_OPENGL_CHECK(glUnmapNamedBuffer(m_id));
     m_data = nullptr;
-    VKM_OPENGL_CHECK(glDeleteBuffers(1, &m_id));
+    deleteBuffer(m_id);
     m_id = 0;
 }
 
