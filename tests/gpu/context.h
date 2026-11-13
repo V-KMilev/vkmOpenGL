@@ -22,6 +22,13 @@ void requireContext();
 void requireDefaultFramebuffer(int width, int height);
 
 /**
+ * @brief Make no context current on this thread, as a test of what a call with none does needs.
+ *
+ * The context stays the process's: requireContext() does not make it current again.
+ */
+void dropContext();
+
+/**
  * @brief Skip the test for want of what a GPU gives, or fail it where VKM_GPU_REQUIRED=1 asks the
  *        machine for it.
  *

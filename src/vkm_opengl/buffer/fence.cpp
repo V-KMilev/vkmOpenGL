@@ -1,6 +1,10 @@
+#define VKM_LOG_CATEGORY "BUFFER"
+
 #include "vkm_opengl/buffer/fence.h"
 
 #include <utility>
+
+#include "vkm_log/logger.h"
 
 #include "vkm_opengl/core/error_handle.h"
 
@@ -36,7 +40,14 @@ bool Fence::passed() {
     if (m_sync == nullptr) return true;
     GLenum status = GL_TIMEOUT_EXPIRED;
     VKM_OPENGL_CHECK(status = glClientWaitSync(m_sync, 0, 0));
-    if (status != GL_ALREADY_SIGNALED && status != GL_CONDITION_SATISFIED) return false;
+    if (status == GL_TIMEOUT_EXPIRED) return false;
+    if (status != GL_ALREADY_SIGNALED && status != GL_CONDITION_SATISFIED) {
+        // Failed, as with no context current: checked again so it would fail again, so the fence goes,
+        // said once.
+        LOG_ERROR("A check of a fence failed (0x%x): what it marked may not have finished", status);
+        release();
+        return false;
+    }
     release();
     return true;
 }
@@ -50,6 +61,10 @@ void Fence::wait() {
         VKM_OPENGL_CHECK(status = glClientWaitSync(m_sync, flags, 1000000000u));
         flags = 0;
     } while (status == GL_TIMEOUT_EXPIRED);
+    // Failed, as with no context current: what the fence guards may not have finished.
+    if (status != GL_ALREADY_SIGNALED && status != GL_CONDITION_SATISFIED) {
+        LOG_ERROR("A wait on a fence failed (0x%x): what it marked may not have finished", status);
+    }
     release();
 }
 

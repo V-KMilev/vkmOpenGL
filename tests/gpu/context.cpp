@@ -84,6 +84,10 @@ void requireContext() {
     if (!s_missing.empty()) missing(s_missing);
 }
 
+void dropContext() {
+    eglMakeCurrent(eglGetCurrentDisplay(), EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
+}
+
 void requireDefaultFramebuffer(int width, int height) {
     requireContext();
     const EGLDisplay display = eglGetCurrentDisplay();

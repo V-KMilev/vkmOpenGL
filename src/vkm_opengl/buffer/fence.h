@@ -29,11 +29,19 @@ class Fence {
          * @brief Whether the marked commands have finished, without waiting; a fence that
          *        has is let go.
          *
-         * @return True when they have, or none were marked.
+         * A check that fails, as with no context current, is logged and lets the fence go: a later
+         * check answers true, as for no mark, though the commands may not have finished.
+         *
+         * @return True when they have, or none are marked; false while they run, and on the check
+         *         that failed.
          */
         bool passed();
 
-        /// Wait until the marked commands have finished, then let the fence go.
+        /**
+         * @brief Wait until the marked commands have finished, then let the fence go.
+         *
+         * A wait that fails, as with no context current, is logged.
+         */
         void wait();
 
         /// Whether it marks commands not yet known to have finished.

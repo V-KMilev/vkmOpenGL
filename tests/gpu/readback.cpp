@@ -2,6 +2,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <string>
 #include <utility>
 
 #include <GL/glew.h>
@@ -124,4 +125,24 @@ TEST("with the library's asserts on, a capture empty or past the buffer's size, 
     CHECK(capture(31, 3, GL_RGB, 8) == Vkm::Test::Ended::Stopped);
     CHECK(capture(32, 0, GL_RGB, 8) == Vkm::Test::Ended::Stopped);
     CHECK(capture(32, 3, GL_RGB, 8, 0) == Vkm::Test::Ended::Stopped);
+}
+
+TEST("a wait or a check with no context current says it failed, and the fence is let go") {
+    Vkm::Test::requireDefaultFramebuffer(SIDE, SIDE);
+    ReadbackBuffer waited(BYTES);
+    ReadbackBuffer checked(BYTES);
+    waited.captureDefault(0, 0, SIDE, SIDE, GL_RGBA, GL_UNSIGNED_BYTE);
+    checked.captureDefault(0, 0, SIDE, SIDE, GL_RGBA, GL_UNSIGNED_BYTE);
+    Vkm::Test::dropContext();
+
+    waited.wait();
+    CHECK(!waited.pending());
+    CHECK(!checked.arrived());
+    CHECK(!checked.pending());
+    int said = 0;
+    for (size_t at = Vkm::Test::logText().find("may not have finished"); at != std::string::npos;) {
+        ++said;
+        at = Vkm::Test::logText().find("may not have finished", at + 1);
+    }
+    CHECK(said == 2);
 }

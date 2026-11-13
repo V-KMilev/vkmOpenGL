@@ -65,7 +65,8 @@ class ReadbackBuffer : public Object {
         /**
          * @brief Whether the capture in flight has landed, asked without waiting.
          *
-         * True once a capture: it is then no longer in flight.
+         * True once a capture: it is then no longer in flight. A check that fails, as with no context
+         * current, is logged and ends the capture: pending() is then false, and it never arrives.
          *
          * @return False while it is in flight, and with none in flight.
          */
@@ -75,7 +76,8 @@ class ReadbackBuffer : public Object {
          * @brief Block until the capture in flight has landed, for a host that cannot wait for
          *        arrived(), as one closing with a capture in flight.
          *
-         * data() is then the copy, and no capture is in flight. Returns at once with none.
+         * data() is then the copy, unless the wait failed, which is logged; no capture is in flight
+         * after. Returns at once with none.
          */
         void wait();
 
