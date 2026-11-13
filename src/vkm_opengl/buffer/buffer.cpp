@@ -10,9 +10,9 @@ namespace Vkm::OpenGL {
 
 namespace {
 
-// One context, drawn from one thread: the indirect binding as vkmOpenGL last made it.
-GLuint   g_indirect       = 0;
-uint64_t g_deletedBuffers = 0;
+GLuint   g_indirect       = 0;  ///< The indirect binding as vkmOpenGL last made it, for one context drawn
+                                ///< from one thread.
+uint64_t g_deletedBuffers = 0;  ///< Buffers deleteBuffer() has deleted, for deletedBuffers().
 
 } // namespace
 

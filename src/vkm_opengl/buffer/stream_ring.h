@@ -93,9 +93,8 @@ class StreamRing {
  *        copied once into a buffer in the GPU's own memory.
  *
  * A ring's memory may sit on the CPU's side of the bus, where every pass reading it fetches
- * it across, and those fetches take
- * memory bandwidth from the CPU. One copy a frame, ordered after the last frame's reads, keeps
- * the ring's no-wait write and reads at video memory speed.
+ * it across, and those fetches take memory bandwidth from the CPU. One copy a frame, ordered
+ * after the last frame's reads, keeps the ring's no-wait write and reads at video memory speed.
  */
 class DeviceStream {
     public:

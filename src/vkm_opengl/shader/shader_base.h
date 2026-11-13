@@ -202,6 +202,10 @@ class ShaderBase : public Object {
         int32_t getUniformLocation(const char* name) const;
 
     private:
+        using UniformLocations = std::unordered_map<std::string_view, int32_t>;  ///< Name to location, keyed
+                                                                                  ///< by view: a literal is
+                                                                                  ///< found unallocated.
+
         /**
          * @brief What a setter last sent a location: a driver call is far dearer than comparing the bytes.
          */
@@ -275,11 +279,8 @@ class ShaderBase : public Object {
         mutable std::deque<std::string> m_uniformNames;  ///< Backs the cache keys; a deque's addresses stay
                                                          ///< put as it grows.
 
-        mutable std::unordered_map<std::string_view, int32_t> m_uniformLocationCache;  ///< Name to location,
-                                                                                       ///< keyed by view so a
-                                                                                       ///< literal hashes
-                                                                                       ///< without
-                                                                                       ///< allocating.
+        mutable UniformLocations m_uniformLocationCache;  ///< Each uniform's location once asked; its keys
+                                                          ///< are m_uniformNames'.
 
         mutable std::vector<SentValue> m_sent;  ///< By location: what each holds, as setters know.
 

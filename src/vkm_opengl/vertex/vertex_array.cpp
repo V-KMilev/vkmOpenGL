@@ -12,8 +12,8 @@ namespace Vkm::OpenGL {
 
 namespace {
 
-// One context, drawn from one thread: the array bound as vkmOpenGL last bound it.
-GLuint g_boundArray = 0;
+GLuint g_boundArray = 0;  ///< The array bound as vkmOpenGL last bound it, for one context drawn from one
+                          ///< thread.
 
 } // namespace
 

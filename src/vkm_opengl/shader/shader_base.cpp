@@ -90,8 +90,7 @@ void ShaderBase::release() noexcept {
 
 namespace {
 
-/// Whether compileInParallel() found the driver's threads.
-bool g_parallel = false;
+bool g_parallel = false;  ///< Whether compileInParallel() found the driver's threads.
 
 constexpr GLuint COMPILER_THREADS = 2;  ///< The driver's threads compileInParallel() asks for. With more, a
                                         ///< driver measured corrupted the heap when a start found some
