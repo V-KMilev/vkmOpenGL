@@ -98,14 +98,13 @@ constexpr GLuint COMPILER_THREADS = 2;  ///< The driver's threads compileInParal
 
 } // namespace
 
-bool ShaderBase::compileInParallel(bool on) {
-    const GLuint threads = on ? COMPILER_THREADS : 0u;
+bool ShaderBase::compileInParallel() {
     if (GLEW_KHR_parallel_shader_compile) {
-        VKM_OPENGL_CHECK(glMaxShaderCompilerThreadsKHR(threads));
-        g_parallel = on;
+        VKM_OPENGL_CHECK(glMaxShaderCompilerThreadsKHR(COMPILER_THREADS));
+        g_parallel = true;
     } else if (GLEW_ARB_parallel_shader_compile) {
-        VKM_OPENGL_CHECK(glMaxShaderCompilerThreadsARB(threads));
-        g_parallel = on;
+        VKM_OPENGL_CHECK(glMaxShaderCompilerThreadsARB(COMPILER_THREADS));
+        g_parallel = true;
     }
     return g_parallel;
 }
@@ -120,10 +119,6 @@ bool ShaderBase::ready() const {
 void ShaderBase::bind() const {
     finishLink();
     VKM_OPENGL_CHECK(glUseProgram(m_id));
-}
-
-void ShaderBase::unbind() const {
-    VKM_OPENGL_CHECK(glUseProgram(0));
 }
 
 bool ShaderBase::tryRecompile() {
@@ -161,14 +156,6 @@ bool ShaderBase::tryRecompile() {
     m_sent.clear();
     m_plainListed = false;
     return true;
-}
-
-const std::string& ShaderBase::getName() const {
-    return m_name;
-}
-
-const std::string& ShaderBase::getPath() const {
-    return m_path;
 }
 
 uint32_t ShaderBase::startStage(uint32_t type, const std::string& source) const {
@@ -438,11 +425,6 @@ void ShaderBase::setUniformMatrix3fv(const char* uniformName, const glm::mat3& m
     const int32_t location = locationToChange(uniformName, &matrix, sizeof(matrix));
     if (location == -1) return;
     VKM_OPENGL_CHECK(glProgramUniformMatrix3fv(m_id, location, 1, GL_FALSE, &matrix[0][0]));
-}
-
-void ShaderBase::setUniform1ui(const char* uniformName, uint32_t ui0) const {
-    const int32_t location = locationToChange(uniformName, &ui0, sizeof(ui0));
-    if (location != -1) VKM_OPENGL_CHECK(glProgramUniform1ui(m_id, location, ui0));
 }
 
 void ShaderBase::setUniform1i(const char* uniformName, int32_t i0) const {

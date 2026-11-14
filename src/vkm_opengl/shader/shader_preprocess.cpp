@@ -19,15 +19,10 @@ namespace Vkm::OpenGL {
 
 namespace {
 
-// Process-wide state behind an accessor: a function-local static initializes on first use, with no
-// order against other translation units.
-int& glslVersion() {
-    static int s_version = GLSL_VERSION;
-    return s_version;
-}
-
 // The application's own constants, inserted after the #version line. Empty
 // until something sets them, which is what makes this module usable without.
+// Behind an accessor: a function-local static initializes on first use, with no
+// order against other translation units.
 std::string& preludeConstants() {
     static std::string s_constants;
     return s_constants;
@@ -81,8 +76,7 @@ std::string resolveIncludes(const fs::path& filePath, std::unordered_set<std::st
 
 } // namespace
 
-void setShaderPrelude(int glslVersion_, std::string constants) {
-    glslVersion() = glslVersion_;
+void setShaderPrelude(std::string constants) {
     preludeConstants() = std::move(constants);
 }
 
@@ -91,7 +85,7 @@ std::string preprocessShaderSource(const std::string& filePath, const std::vecto
     std::string variant;
     for (const std::string& name : defines) variant += "#define " + name + "\n";
     // #version must be the first line, and #included files never carry one.
-    return "#version " + std::to_string(glslVersion()) + " core\n"
+    return "#version " + std::to_string(GLSL_VERSION) + " core\n"
          + preludeConstants()
          + variant
          + resolveIncludes(fs::path(filePath), visited);

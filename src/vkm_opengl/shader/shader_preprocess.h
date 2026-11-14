@@ -8,18 +8,16 @@ namespace Vkm::OpenGL {
 /**
  * @brief Set the text prepended to every shader stage.
  *
- * The `#version` is GLSL_VERSION (version.h) unless the caller asks for another; the
- * constants are the caller's, GLSL declarations of values its own code holds (array
- * capacities, grid dimensions), so no shader file copies them.
+ * The `#version` is GLSL_VERSION (version.h); the constants are the caller's, GLSL
+ * declarations of values its own code holds (array capacities, grid dimensions), so no
+ * shader file copies them.
  *
  * Applies to graphics and compute stages alike, since both go through
  * preprocessShaderSource. Call once at startup, before any shader is built.
  *
- * @param glslVersion Version in GLSL's integer form, e.g. 450 for 4.5.
- * @param constants GLSL declarations inserted after the `#version` line;
- *                  empty for an application that needs none.
+ * @param constants GLSL declarations inserted after the `#version` line.
  */
-void setShaderPrelude(int glslVersion, std::string constants = {});
+void setShaderPrelude(std::string constants);
 
 /**
  * @brief Load a shader stage from disk with `#version` prepended, @p defines

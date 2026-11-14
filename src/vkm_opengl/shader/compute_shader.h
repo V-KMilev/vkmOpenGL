@@ -10,11 +10,10 @@ namespace Vkm::OpenGL {
 /**
  * @brief Holds the source code for a compute shader stage.
  *
- * Can be constructed with a path to automatically load compute shader source file from disk.
- * Validates compute shader source file presence.
+ * Constructed from a directory, whose compute.shader it loads. Validates compute shader source file
+ * presence.
  */
 struct ComputeShaderSource {
-    ComputeShaderSource();
     ~ComputeShaderSource() = default;
 
     explicit ComputeShaderSource(const std::string& path);
@@ -33,7 +32,7 @@ struct ComputeShaderSource {
 /**
  * @brief OpenGL compute shader program wrapper.
  *
- * Handles compilation, linkage, binding/unbinding, and uniform value setting for compute shaders.
+ * Handles compilation, linkage, binding, and uniform value setting for compute shaders.
  * Automatically loads compute shader from directory containing compute.shader.
  *
  * Provides compute-specific functionality like dispatch() for executing compute operations.

@@ -11,11 +11,10 @@ namespace Vkm::OpenGL {
 /**
  * @brief Holds the source code for graphics shader stages (vertex, fragment, geometry).
  *
- * Can be constructed with a path to automatically load shader source files from disk.
- * Validates shader source file presence. Geometry shader is optional.
+ * Constructed from a directory, whose stage files it loads. Validates shader source file presence.
+ * Geometry shader is optional.
  */
 struct GraphicsShaderSource {
-    GraphicsShaderSource();
     ~GraphicsShaderSource() = default;
 
     /**
@@ -24,33 +23,12 @@ struct GraphicsShaderSource {
      * Reads vertex.shader, fragment.shader, and optionally geometry.shader,
      * running each through preprocessShaderSource so `#include "rel.glsl"`
      * directives are inlined (relative to the including file). A stage with no
-     * `#include` is read verbatim but for the prelude and @p defines. For other
-     * preprocessing construct the struct directly with prepared source strings.
+     * `#include` is read verbatim but for the prelude and @p defines.
      *
      * @param path    The directory the stages are in.
      * @param defines Declared at the top of every stage: which variant of the program this is.
      */
     explicit GraphicsShaderSource(const std::string& path, std::vector<std::string> defines = {});
-
-    /**
-     * @brief Direct construction with already-prepared source strings.
-     *
-     * Used when the caller has run its own preprocessing (e.g., resolved
-     * `#include` directives) and wants to hand the final source straight
-     * to compilation, bypassing the from-disk file reads.
-     *
-     * @param path Logical directory the source was loaded from. Used only
-     *             for diagnostics and hot-reload reloadSource() lookups.
-     * @param vertexShader   Final vertex shader source string.
-     * @param fragmentShader Final fragment shader source string.
-     * @param geometryShader Optional geometry shader source (empty = none).
-     */
-    GraphicsShaderSource(
-        std::string path,
-        std::string vertexShader,
-        std::string fragmentShader,
-        std::string geometryShader = {}
-    );
 
     /**
      * @brief Check existence of the shader source files.
@@ -80,7 +58,7 @@ struct GraphicsShaderSource {
 /**
  * @brief OpenGL graphics shader program wrapper (vertex + fragment + optional geometry).
  *
- * Handles compilation, linkage, binding/unbinding, and uniform value setting for graphics shaders.
+ * Handles compilation, linkage, binding, and uniform value setting for graphics shaders.
  * Automatically loads shaders from directory containing vertex.shader, fragment.shader,
  * and optionally geometry.shader.
  *
@@ -107,16 +85,6 @@ class Shader : public ShaderBase {
          */
         explicit Shader(const std::string& path, std::vector<std::string> defines = {});
 
-        /**
-         * @brief Construct from already-prepared source strings.
-         *
-         * Skips the from-disk file read; the source is taken as-is. The
-         * @p path is still recorded so reloadSource() and diagnostics work;
-         * a derived class is expected to override reloadSource() if hot
-         * reload should re-run the caller's preprocessor.
-         */
-        explicit Shader(GraphicsShaderSource source);
-
     protected:
         /**
          * @brief Creates the graphics shader program (vertex + fragment + optional geometry).
@@ -128,10 +96,8 @@ class Shader : public ShaderBase {
          */
         void reloadSource() override;
 
-    protected:
-        GraphicsShaderSource m_source;  ///< Visible to subclasses so they can override reloadSource() and
-                                        ///< install a freshly-prepared source (e.g. re-running an include
-                                        ///< preprocessor) without going through the base path-based loader.
+    private:
+        GraphicsShaderSource m_source;  ///< The stages as last read, and the defines a reload declares.
 };
 
 } // namespace Vkm::OpenGL

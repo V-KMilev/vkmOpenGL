@@ -50,23 +50,13 @@ struct ShaderCount {
 ShaderCount countShaders();
 
 /**
- * @brief Check every live shader's compile and link, waiting for any still building.
+ * @brief Check the compile and link of one live shader the driver is done with that nothing has
+ *        checked yet.
  *
  * With ShaderBase::compileInParallel() on, a program is otherwise checked at its first use, which
- * can come long after startup. A host calls this once countShaders() finds none compiling, so a
- * failure surfaces then. A shader already checked costs nothing.
- *
- * @throws std::runtime_error At the first shader that failed to compile or link, having logged it.
- */
-void checkShaders();
-
-/**
- * @brief Check one live shader the driver is done with that nothing has checked yet, as
- *        checkShaders() checks them all.
- *
- * On some drivers the asking is where a program is really built, holding every GL call while it
- * is: a host checking a few a frame keeps each frame short where checking all at once is one long
- * frozen frame.
+ * can come long after startup. On some drivers the asking is where a program is really built,
+ * holding every GL call while it is: a host checking a few a frame keeps each frame short where
+ * checking all at once is one long frozen frame.
  *
  * @return Whether one was checked.
  * @throws std::runtime_error When it failed to compile or link, having logged it.

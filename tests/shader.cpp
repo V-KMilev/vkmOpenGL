@@ -27,32 +27,32 @@ std::string sourceOf(const std::string& name) { return preprocessShaderSource((s
 
 bool has(const std::string& text, const std::string& what) { return text.find(what) != std::string::npos; }
 
+std::string versionLine() { return "#version " + std::to_string(Vkm::OpenGL::GLSL_VERSION) + " core\n"; }
+
 } // namespace
 
-TEST("the prelude's #version is GLSL_VERSION, the GLSL of the OpenGL the library needs, until it is set") {
+TEST("the prelude's #version is GLSL_VERSION, the GLSL of the OpenGL the library needs") {
     CHECK(Vkm::OpenGL::GLSL_VERSION == Vkm::OpenGL::MAJOR_VERSION * 100 + Vkm::OpenGL::MINOR_VERSION * 10);
     writeText(scratch() / "plain.glsl", "void main() {}\n");
-    const std::string version = "#version " + std::to_string(Vkm::OpenGL::GLSL_VERSION) + " core\n";
-    CHECK(sourceOf("plain.glsl").rfind(version, 0) == 0u);
+    CHECK(sourceOf("plain.glsl").rfind(versionLine(), 0) == 0u);
 }
 
 TEST("a stage is its #version, then the prelude's constants, then the source as written") {
     writeText(scratch() / "plain.glsl", "void main() {}\n");
-    setShaderPrelude(430);
-    CHECK(sourceOf("plain.glsl") == "#version 430 core\nvoid main() {}\n");
+    CHECK(sourceOf("plain.glsl") == versionLine() + "void main() {}\n");
 
-    setShaderPrelude(460, "const int ANSWER = 42;\n");
-    CHECK(sourceOf("plain.glsl") == "#version 460 core\nconst int ANSWER = 42;\nvoid main() {}\n");
+    setShaderPrelude("const int ANSWER = 42;\n");
+    CHECK(sourceOf("plain.glsl") == versionLine() + "const int ANSWER = 42;\nvoid main() {}\n");
 
-    setShaderPrelude(430);
+    setShaderPrelude("");
     CHECK(!has(sourceOf("plain.glsl"), "ANSWER"));
 }
 
 TEST("a variant's defines are declared after the prelude, in order, before the source") {
     writeText(scratch() / "plain.glsl", "void main() {}\n");
-    setShaderPrelude(450, "const int N = 1;\n");
+    setShaderPrelude("const int N = 1;\n");
     const std::string path    = (scratch() / "plain.glsl").string();
-    const std::string prelude = "#version 450 core\nconst int N = 1;\n";
+    const std::string prelude = versionLine() + "const int N = 1;\n";
     const std::string defines = "#define SHADOWS\n#define SKINNED\n";
     CHECK(preprocessShaderSource(path, {"SHADOWS", "SKINNED"}) == prelude + defines + "void main() {}\n");
 }

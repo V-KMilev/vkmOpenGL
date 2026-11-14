@@ -15,10 +15,6 @@ namespace fs = std::filesystem;
 
 namespace Vkm::OpenGL {
 
-ComputeShaderSource::ComputeShaderSource()
-    : m_path()
-    , computeShader() {}
-
 ComputeShaderSource::ComputeShaderSource(const std::string& path)
     : m_path(path)
     , computeShader() {

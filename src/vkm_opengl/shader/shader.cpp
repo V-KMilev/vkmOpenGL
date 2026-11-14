@@ -16,12 +16,6 @@ namespace fs = std::filesystem;
 
 namespace Vkm::OpenGL {
 
-GraphicsShaderSource::GraphicsShaderSource()
-    : m_path()
-    , vertexShader()
-    , fragmentShader()
-    , geometryShader() {}
-
 GraphicsShaderSource::GraphicsShaderSource(const std::string& path, std::vector<std::string> defines_)
     : m_path(path)
     , vertexShader()
@@ -44,17 +38,6 @@ GraphicsShaderSource::GraphicsShaderSource(const std::string& path, std::vector<
         geometryShader = preprocessShaderSource(geometryShaderName, defines);
     }
 }
-
-GraphicsShaderSource::GraphicsShaderSource(
-    std::string path,
-    std::string vertexShader_,
-    std::string fragmentShader_,
-    std::string geometryShader_
-)
-    : m_path(std::move(path))
-    , vertexShader(std::move(vertexShader_))
-    , fragmentShader(std::move(fragmentShader_))
-    , geometryShader(std::move(geometryShader_)) {}
 
 bool GraphicsShaderSource::validatePaths(
     const std::string& vertexShaderName,
@@ -93,15 +76,8 @@ Shader::Shader(const std::string& path, std::vector<std::string> defines)
     createProgram();
 }
 
-Shader::Shader(GraphicsShaderSource source)
-    : ShaderBase(source.m_path)
-    , m_source(std::move(source)) {
-    createProgram();
-}
-
 void Shader::reloadSource() {
-    // Re-read from disk. A subclass whose source does not come from its path
-    // (a caller's own preprocessor, say) overrides this to run its loader again.
+    // Re-read from disk, as the same variant.
     m_source = GraphicsShaderSource(m_path, m_source.defines);
 }
 

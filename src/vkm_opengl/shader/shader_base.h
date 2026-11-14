@@ -19,11 +19,11 @@ namespace Vkm::OpenGL {
  * @brief Base class for OpenGL shader programs.
  *
  * Provides common functionality for all shader types:
- * - Program binding/unbinding
+ * - Program binding
  * - Uniform value setting (all types)
  * - Shader compilation and linking, in the driver's threads where it has them
- *   (compileInParallel()), checked at the program's first use, at checkShaders()
- *   or at checkNextShader()
+ *   (compileInParallel()), checked at the program's first use or at
+ *   checkNextShader()
  * - Hot-reloading support
  * - Debug labeling
  *
@@ -45,21 +45,20 @@ class ShaderBase : public Object {
          * @brief Let the driver compile and link programs on two threads of its own, if it can.
          *
          * Called once the context is current, before the programs it should speed. A program
-         * built while it is on is handed to the driver and checked at its first use, which waits
-         * for it; ready() says whether that would wait. While it is off, or on a driver without
+         * built after it is handed to the driver and checked at its first use, which waits for
+         * it; ready() says whether that would wait. Before it, or on a driver without
          * GL_KHR_parallel_shader_compile or GL_ARB_parallel_shader_compile, a program is checked
          * as it is built.
          *
-         * @param on Whether to; off gives the driver's threads back.
          * @return Whether the driver now compiles in parallel.
          */
-        static bool compileInParallel(bool on = true);
+        static bool compileInParallel();
 
         /**
          * @brief Whether the program has compiled and linked, asked without waiting for it.
          *
          * @return True once the driver is done with it, failed or not; a failure throws at
-         *         the program's first use, or at checkShaders() or checkNextShader().
+         *         the program's first use, or at checkNextShader().
          */
         bool ready() const;
 
@@ -76,11 +75,6 @@ class ShaderBase : public Object {
         void bind() const;
 
         /**
-         * @brief Unbind any currently bound shader program (glUseProgram(0)).
-         */
-        void unbind() const;
-
-        /**
          * @brief Reload the sources from disk, keeping the working program on failure.
          *
          * Builds the replacement first and adopts it only once it links; on a
@@ -90,18 +84,6 @@ class ShaderBase : public Object {
          * @return True if the new program linked and is now in use.
          */
         bool tryRecompile();
-
-        /**
-         * @brief Get user-friendly shader name (the filename of the shader directory).
-         * @return The name of the shader program.
-         */
-        const std::string& getName() const;
-
-        /**
-         * @brief Get the full path to the shader source directory.
-         * @return The file path associated with this shader.
-         */
-        const std::string& getPath() const;
 
         // Uniform setters, on this program whether it is bound or not. The cache is content-hashed;
         // any source of the name works (string literal, std::string::c_str(), runtime-constructed).
@@ -118,7 +100,6 @@ class ShaderBase : public Object {
         void setUniformMatrix4fv(const char* uniformName, const glm::mat4& matrix) const;
         void setUniformMatrix3fv(const char* uniformName, const glm::mat3& matrix) const;
 
-        void setUniform1ui(const char* uniformName, uint32_t ui0) const;
         void setUniform1i(const char* uniformName, int32_t i0) const;
         void setUniform2i(const char* uniformName, int32_t i0, int32_t i1) const;
         void setUniform3iv(const char* uniformName, const glm::ivec3& v) const;
@@ -233,8 +214,7 @@ class ShaderBase : public Object {
          */
         void finishLink() const;
 
-        // Run finishLink() on every live shader, or the next one the driver is done with.
-        friend void checkShaders();
+        // Run finishLink() on the next live shader the driver is done with.
         friend bool checkNextShader();
 
         /// List the program's plain uniforms into m_plain, and size the zeros for the largest.

@@ -96,12 +96,6 @@ ShaderCount countShaders() {
     return count;
 }
 
-void checkShaders() {
-    for (const ShaderBase* shader : liveShaders()) {
-        shader->finishLink();
-    }
-}
-
 bool checkNextShader() {
     for (const ShaderBase* shader : liveShaders()) {
         if (shader->checked() || !shader->ready()) continue;
