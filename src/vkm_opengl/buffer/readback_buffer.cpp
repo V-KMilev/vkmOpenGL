@@ -105,8 +105,8 @@ void ReadbackBuffer::release() noexcept {
     m_id = 0;
 }
 
-void ReadbackBuffer::capture(const Buffer& source, uint32_t offset) {
-    VKM_OPENGL_CHECK(glCopyNamedBufferSubData(source.getID(), m_id, offset, 0, m_bytes));
+void ReadbackBuffer::capture(const Buffer& source) {
+    VKM_OPENGL_CHECK(glCopyNamedBufferSubData(source.getID(), m_id, 0, 0, m_bytes));
     m_fence.place();
 }
 

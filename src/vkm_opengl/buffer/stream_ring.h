@@ -29,12 +29,8 @@ class StreamRing {
     public:
         static constexpr uint32_t FRAMES = 3;
 
-        /**
-         * @brief An empty ring; nothing is allocated before the first write().
-         *
-         * @param initialBytes What a region holds at first.
-         */
-        explicit StreamRing(uint32_t initialBytes = 1u << 20);
+        /// An empty ring; nothing is allocated before the first write().
+        StreamRing();
         ~StreamRing();
 
         StreamRing(const StreamRing& other) = delete;
@@ -55,9 +51,6 @@ class StreamRing {
 
         /// Fence the open region: the GPU commands issued so far are the last to read it.
         void endFrame();
-
-        /// Bytes a region holds now.
-        uint32_t regionBytes() const { return m_regionBytes; }
 
     private:
         struct Retired {

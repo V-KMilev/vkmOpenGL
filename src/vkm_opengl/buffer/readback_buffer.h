@@ -38,12 +38,11 @@ class ReadbackBuffer : public Object {
 
     public:
         /**
-         * @brief Copy the first size() bytes of @p source, from @p offset, and mark when they land.
+         * @brief Copy the first size() bytes of @p source, and mark when they land.
          *
          * @param source The buffer read from.
-         * @param offset Where in it the copy begins.
          */
-        void capture(const Buffer& source, uint32_t offset = 0);
+        void capture(const Buffer& source);
 
         /**
          * @brief Copy a rectangle of the default framebuffer's read buffer, and mark when it lands.

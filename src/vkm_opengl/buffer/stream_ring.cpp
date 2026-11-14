@@ -13,6 +13,8 @@ namespace {
 
 constexpr GLbitfield MAPPING = GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT;
 
+constexpr uint32_t INITIAL_REGION_BYTES = 1u << 20;  ///< What a region holds until a frame outgrows it.
+
 /// @p bytes rounded up to a multiple of @p alignment, a power of two.
 uint32_t alignUp(uint32_t bytes, uint32_t alignment) {
     return (bytes + alignment - 1) & ~(alignment - 1);
@@ -35,8 +37,8 @@ uint32_t spanAlignment() {
 
 } // namespace
 
-StreamRing::StreamRing(uint32_t initialBytes)
-    : m_regionBytes(initialBytes) {}
+StreamRing::StreamRing()
+    : m_regionBytes(INITIAL_REGION_BYTES) {}
 
 StreamRing::~StreamRing() {
     release();

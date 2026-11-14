@@ -41,11 +41,10 @@ uint64_t deletedBuffers() {
 Buffer::Buffer(GLenum target, const void* data, uint32_t size, GLenum usage)
     : Object(target, GL_BUFFER, 0)
     , m_size(size)
-    , m_usage(usage)
 {
     VKM_OPENGL_CHECK(glCreateBuffers(1, &m_id));
     VKM_ASSERT(m_id != 0);
-    VKM_OPENGL_CHECK(glNamedBufferData(m_id, m_size, data, m_usage));
+    VKM_OPENGL_CHECK(glNamedBufferData(m_id, m_size, data, usage));
 }
 
 Buffer::~Buffer() {
@@ -56,8 +55,7 @@ Buffer& Buffer::operator=(Buffer && other) noexcept {
     if (this != &other) {
         release();
         Object::operator=(std::move(other));
-        m_size  = other.m_size;
-        m_usage = other.m_usage;
+        m_size = other.m_size;
     }
     return *this;
 }
@@ -67,33 +65,8 @@ void Buffer::release() noexcept {
     m_id = 0;
 }
 
-void Buffer::bind(GLenum target) const {
-    // The override is what lets one buffer serve two roles - storage a compute
-    // stage writes and, say, the indirect commands a draw reads. Ignoring it
-    // silently bound to the wrong target and left the intended one empty.
-    const GLenum to = target == GL_NONE ? m_target : target;
-    if (to == GL_DRAW_INDIRECT_BUFFER) {
-        bindIndirect(m_id);
-        return;
-    }
-    VKM_OPENGL_CHECK(glBindBuffer(to, m_id));
-}
-
-void Buffer::unbind(GLenum target) const {
-    const GLenum to = target == GL_NONE ? m_target : target;
-    if (to == GL_DRAW_INDIRECT_BUFFER) {
-        bindIndirect(0);
-        return;
-    }
-    VKM_OPENGL_CHECK(glBindBuffer(to, 0));
-}
-
 uint32_t Buffer::getSize() const {
     return m_size;
-}
-
-GLenum Buffer::getTarget() const {
-    return m_target;
 }
 
 void Buffer::update(const void* data, uint32_t size, uint32_t offset) {
@@ -101,17 +74,8 @@ void Buffer::update(const void* data, uint32_t size, uint32_t offset) {
     VKM_OPENGL_CHECK(glNamedBufferSubData(m_id, offset, size, data));
 }
 
-void Buffer::allocate(uint32_t size, const void* data) {
-    VKM_OPENGL_CHECK(glNamedBufferData(m_id, size, data, m_usage));
-    m_size = size;
-}
-
 void Buffer::bindBase(uint32_t bindingPoint) const {
     VKM_OPENGL_CHECK(glBindBufferBase(m_target, bindingPoint, m_id));
-}
-
-void Buffer::bindRange(uint32_t bindingPoint, uint32_t offset, uint32_t size) const {
-    VKM_OPENGL_CHECK(glBindBufferRange(m_target, bindingPoint, m_id, offset, size));
 }
 
 void Buffer::copyFrom(const Buffer& source, uint32_t sourceOffset, uint32_t offset, uint32_t bytes) {
@@ -124,43 +88,6 @@ void Buffer::clear(GLenum internalFormat, GLenum format, GLenum type, const void
 
 void Buffer::read(uint32_t offset, uint32_t bytes, void* out) const {
     VKM_OPENGL_CHECK(glGetNamedBufferSubData(m_id, offset, bytes, out));
-}
-
-MappedBuffer::MappedBuffer(const Buffer& buffer, void* data)
-    : m_buffer(&buffer)
-    , m_data(data) {}
-
-MappedBuffer::~MappedBuffer() {
-    if (m_data == nullptr) return;
-    VKM_OPENGL_CHECK(glUnmapNamedBuffer(m_buffer->getID()));
-}
-
-MappedBuffer::MappedBuffer(MappedBuffer && other) noexcept
-    : m_buffer(other.m_buffer)
-    , m_data(other.m_data) {
-    other.m_data = nullptr;
-}
-
-MappedBuffer& MappedBuffer::operator=(MappedBuffer && other) noexcept {
-    if (this != &other) {
-        m_buffer     = other.m_buffer;
-        m_data       = other.m_data;
-        other.m_data = nullptr;
-    }
-    return *this;
-}
-
-MappedBuffer Buffer::map(GLenum access) {
-    void* data = nullptr;
-    VKM_OPENGL_CHECK(data = glMapNamedBuffer(m_id, access));
-    return MappedBuffer(*this, data);
-}
-
-MappedBuffer Buffer::mapRange(uint32_t offset, uint32_t length, GLbitfield access) {
-    VKM_ASSERT(offset + length <= m_size);
-    void* data = nullptr;
-    VKM_OPENGL_CHECK(data = glMapNamedBufferRange(m_id, offset, length, access));
-    return MappedBuffer(*this, data);
 }
 
 } // namespace Vkm::OpenGL

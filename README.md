@@ -82,7 +82,7 @@ define `NDEBUG`.
 | Folder    | What                                                                                                                                                                       |
 |-----------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `core`    | `load()`, `Context` (state cache, limits, barriers), `Object`, `VKM_OPENGL_CHECK`, debug output, the version it needs                                                      |
-| `buffer`  | `Buffer` and its vertex, index, uniform and storage kinds; `StreamRing`, `DeviceStream`, `Fence`, `ReadbackBuffer`                                                         |
+| `buffer`  | `Buffer` and its vertex, uniform and storage kinds; `StreamRing`, `DeviceStream`, `Fence`, `ReadbackBuffer`                                                                |
 | `vertex`  | `VertexArray` (attribute formats, bindings, draws), `VertexBufferLayout`                                                                                                   |
 | `texture` | `Texture2D`, `Texture2DArray`, `Texture3D`, `TextureCube`, `TextureCubeArray`, `MipChainTexture`, `Sampler`; the cube's faces in GL's order (`CUBE_FACES`, `cubeFaceView`) |
 | `target`  | `FrameBuffer`, `RenderBuffer`                                                                                                                                              |
