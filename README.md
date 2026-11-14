@@ -83,7 +83,7 @@ define `NDEBUG`.
 |-----------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `core`    | `load()`, `Context` (state cache, limits, barriers), `Object`, `VKM_OPENGL_CHECK`, debug output, the version it needs                                                      |
 | `buffer`  | `Buffer` and its vertex, uniform and storage kinds; `StreamRing`, `DeviceStream`, `Fence`, `ReadbackBuffer`                                                                |
-| `vertex`  | `VertexArray` (attribute formats, bindings, draws), `VertexBufferLayout`                                                                                                   |
+| `vertex`  | `VertexArray` (attribute formats, bindings, draws)                                                                                                                         |
 | `texture` | `Texture2D`, `Texture2DArray`, `Texture3D`, `TextureCube`, `TextureCubeArray`, `MipChainTexture`, `Sampler`; the cube's faces in GL's order (`CUBE_FACES`, `cubeFaceView`) |
 | `target`  | `FrameBuffer`, `RenderBuffer`                                                                                                                                              |
 | `shader`  | `Shader`, `ComputeShader`, the source preprocessor, parallel compiling, hot reload                                                                                         |
@@ -95,8 +95,8 @@ Each folder is under `src/vkm_opengl/`.
 `tests/` holds the library's own suite, built with `VKM_OPENGL_BUILD_TESTS`: each test is
 `TEST("what works")` in `tests/<topic>.cpp`, a CTest named `vkm_opengl: <what works>` and run in a
 process of its own, so `ctest -L vkm_opengl` runs them in the consumer's tree, with `-C <config>` under
-a multi-config generator. It covers what runs without a context - vertex layouts, the preprocessor, the
-cube's faces, the indirect draw's record, `load()` with none current, a precondition stopping - so it
+a multi-config generator. It covers what runs without a context - the preprocessor, the cube's
+faces, the indirect draw's record, `load()` with none current, a precondition stopping - so it
 runs on a machine with no GPU. What needs a context is in `tests/gpu/`, a binary of its own built where
 EGL is: each test makes a context through EGL's device platform, with no display, is labeled `gpu` as
 well, and is skipped, saying why, on a machine with no device (or fails where `VKM_GPU_REQUIRED=1`).

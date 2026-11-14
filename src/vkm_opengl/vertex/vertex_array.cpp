@@ -54,42 +54,8 @@ void VertexArray::unbind() const {
     g_boundArray = 0;
 }
 
-namespace {
-
-// How a layout element reaches the shader: an integer type keeps its value unless the element is
-// normalized; every other type is read as a float.
-AttributeKind kindOf(const VertexBufferElement& element) {
-    const bool integral = element.type == GL_INT   || element.type == GL_UNSIGNED_INT   ||
-                          element.type == GL_BYTE  || element.type == GL_UNSIGNED_BYTE  ||
-                          element.type == GL_SHORT || element.type == GL_UNSIGNED_SHORT;
-    if (!integral) return AttributeKind::Float;
-    return element.normalized == GL_TRUE ? AttributeKind::Normalized : AttributeKind::Integer;
-}
-
-} // namespace
-
-void VertexArray::addBuffer(
-    const VertexBuffer& vertexBuffer,
-    const VertexBufferLayout& layout,
-    uint32_t startIndex
-) {
-    // The buffer takes the binding numbered as its first attribute, so two buffers fed at their
-    // own start indices never share one.
-    const uint32_t binding = startIndex;
-    setVertexBuffer(binding, vertexBuffer, 0, layout.getStride());
-
-    const std::vector<VertexBufferElement>& elements = layout.getElements();
-    uint32_t offset = 0;
-    for (uint32_t i = 0; i < elements.size(); ++i) {
-        const VertexBufferElement& element = elements[i];
-        const auto count = static_cast<int32_t>(element.count);
-        setAttribute(startIndex + i, binding, count, element.type, offset, kindOf(element));
-        offset += element.count * VertexBufferElement::getSizeOfType(element.type);
-    }
-}
-
-void VertexArray::setDivisor(uint32_t startIndex, uint32_t divisor) {
-    VKM_OPENGL_CHECK(glVertexArrayBindingDivisor(m_id, startIndex, divisor));
+void VertexArray::setDivisor(uint32_t binding, uint32_t divisor) {
+    VKM_OPENGL_CHECK(glVertexArrayBindingDivisor(m_id, binding, divisor));
 }
 
 void VertexArray::drawArrays(GLenum mode, int32_t first, int32_t count) const {

@@ -5,8 +5,6 @@
 
 #include "vkm_opengl/core/object.h"
 #include "vkm_opengl/buffer/buffer.h"  // BufferSpan
-#include "vkm_opengl/vertex/vertex_buffer_layout.h"
-#include "vkm_opengl/buffer/vertex_buffer.h"
 
 namespace Vkm::OpenGL {
 
@@ -40,8 +38,8 @@ static_assert(sizeof(DrawElementsIndirectCommand) == 20, "GL reads the command a
 /**
  * @brief Vertex Array Object (VAO) wrapper.
  *
- * Manages vertex attribute state and binding of vertex/index buffers. Provides
- * helpers to add buffers with layouts and configure instancing divisors.
+ * Manages vertex attribute state, the binding of vertex and index buffers, and
+ * instancing divisors.
  *
  * A bind or a buffer fed as it already is goes no further: the driver revalidates a draw's state
  * after either, whatever it was before. So the bound array and each array's feeds are remembered,
@@ -70,38 +68,12 @@ class VertexArray : public Object {
         void unbind() const;
 
         /**
-         * @brief Adds a vertex buffer and its layout to this VAO.
+         * @brief Step binding @p binding once every @p divisor instances, not per vertex.
          *
-         * The layout's elements land on consecutive attribute locations starting
-         * at @p startIndex, so a VAO fed from two buffers gives the second one
-         * the index the first one ended at.
-         *
-         * That index is the caller's to state and is not remembered between
-         * calls: a VAO re-fed with a new buffer - a ring that outgrew itself,
-         * say - must re-wire the same locations, and a counter that carried over
-         * would move them instead and leave the old, deleted buffer wired to the
-         * ones the shader actually reads.
-         *
-         * Each element goes through setAttribute: an integer type as AttributeKind::Integer, or
-         * Normalized when the layout normalizes it, and every other type as Float.
-         *
-         * @param vertexBuffer Buffer to source the attributes from.
-         * @param layout       Element list describing one vertex.
-         * @param startIndex   First attribute location to write.
+         * @param binding The binding, as setVertexBuffer() feeds it.
+         * @param divisor Instances per step; 0 steps per vertex.
          */
-        void addBuffer(
-            const VertexBuffer& vertexBuffer,
-            const VertexBufferLayout& layout,
-            uint32_t startIndex = 0
-        );
-
-        /**
-         * @brief Step the buffer fed at @p startIndex once every @p divisor instances, not per vertex.
-         *
-         * @param startIndex The startIndex that buffer was added at.
-         * @param divisor    Instances per step; 0 steps per vertex.
-         */
-        void setDivisor(uint32_t startIndex, uint32_t divisor);
+        void setDivisor(uint32_t binding, uint32_t divisor);
 
         /**
          * @brief Draw @p count non-indexed vertices from this VAO with glDrawArrays.
