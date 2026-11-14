@@ -1,6 +1,5 @@
 #pragma once
 
-#include <cstddef>
 #include <cstdint>
 
 #include "vkm_opengl/core/object.h"
@@ -113,31 +112,6 @@ class FrameBuffer : public Object {
          * @param depth The value cleared to.
          */
         void clearDepth(float depth) const;
-
-        /**
-         * @brief Read a rectangle of the default framebuffer's read buffer into @p pixels.
-         *
-         * The read binding is put back after.
-         *
-         * @param x      Left, in pixels from the window's lower left.
-         * @param y      Bottom.
-         * @param width  Width in pixels.
-         * @param height Height in pixels.
-         * @param format GL format of what is read, e.g. GL_RGB.
-         * @param type   GL type of each channel, e.g. GL_UNSIGNED_BYTE.
-         * @param bytes  The room @p pixels has.
-         * @param pixels Where the rows land, bottom first, at the pack alignment.
-         */
-        static void readDefault(
-            int32_t x,
-            int32_t y,
-            int32_t width,
-            int32_t height,
-            GLenum format,
-            GLenum type,
-            size_t bytes,
-            void* pixels
-        );
 
         /**
          * @brief Check if the framebuffer is complete and ready for rendering.
