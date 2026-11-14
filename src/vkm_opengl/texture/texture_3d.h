@@ -58,9 +58,8 @@ class Texture3D : public Object {
          *
          * @param unit   Image unit (matches `layout(binding = unit) uniform image3D`).
          * @param access GL_READ_ONLY / GL_WRITE_ONLY / GL_READ_WRITE.
-         * @param level  Mip level (default 0).
          */
-        void bindImage(uint32_t unit, GLenum access, int32_t level = 0) const;
+        void bindImage(uint32_t unit, GLenum access) const;
 
         /**
          * @brief Replace the whole volume from @p pixels.
@@ -71,18 +70,6 @@ class Texture3D : public Object {
          * @param pixels Source for every texel of level 0.
          */
         void upload(const void* pixels) const;
-
-        /**
-         * @brief Read the whole volume back into @p pixels.
-         *
-         * A synchronizing read - the offline half of the same transfer as
-         * upload(), for a bake that finishes its work on the CPU. Not for
-         * anything inside a frame.
-         *
-         * @param pixels Destination, sized as upload()'s source is.
-         * @param bytes  The destination's size in bytes; the read writes no further.
-         */
-        void download(void* pixels, uint32_t bytes) const;
 
         uint32_t getWidth()  const { return m_params.width; }
         uint32_t getHeight() const { return m_params.height; }

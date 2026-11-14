@@ -243,12 +243,6 @@ class Texture2D : public Object {
         const Texture2DParams& getParams() const { return m_params; }
 
         /**
-         * @brief The debug label this texture was created under.
-         * @return The name.
-         */
-        const std::string& getName() const { return m_name; }
-
-        /**
          * @brief Fill level 0 with new pixels, and the chain below when it generates mipmaps.
          *
          * A new size makes new storage, so the texture's name changes: an FBO attachment or a
@@ -298,13 +292,6 @@ class Texture2D : public Object {
 
         /// Whether it is multisampled: params.samples above 1.
         bool multisampled() const { return m_params.samples > 1; }
-
-        /**
-         * @brief Set the S and T coordinate wrapping modes.
-         * @param s S coordinate wrap mode.
-         * @param t T coordinate wrap mode.
-         */
-        void setWrap(TextureWrap s, TextureWrap t);
 
         /**
          * @brief Set the min/mag filtering for the texture.
@@ -368,7 +355,7 @@ class Texture2D : public Object {
         void applyParameters() const;
 
     private:
-        std::string     m_name;  ///< Debug label, for GL object naming and logs.
+        std::string     m_name;  ///< Debug label, for GL object naming.
         Texture2DParams m_params;
 
         std::array<GLint, 4> m_swizzle = {GL_RED, GL_GREEN, GL_BLUE, GL_ALPHA};  ///< See setSwizzle().

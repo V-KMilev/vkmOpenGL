@@ -26,15 +26,12 @@ class TextureCube : public Object {
         TextureCube(const TextureCube& other) = delete;
         TextureCube& operator=(const TextureCube& other) = delete;
 
-        TextureCube(TextureCube && other) noexcept
-            : Object(std::move(other)), m_size(other.m_size), m_mips(other.m_mips) {}
+        TextureCube(TextureCube && other) noexcept = default;
 
         TextureCube& operator=(TextureCube && other) noexcept {
             if (this != &other) {
                 release();
                 Object::operator=(std::move(other));
-                m_size = other.m_size;
-                m_mips = other.m_mips;
             }
             return *this;
         }
@@ -50,8 +47,6 @@ class TextureCube : public Object {
          */
         void create(int size, int mips, GLenum internalFormat, bool mipFiltering) {
             release();
-            m_size = size;
-            m_mips = mips;
 
             VKM_OPENGL_CHECK(glCreateTextures(GL_TEXTURE_CUBE_MAP, 1, &m_id));
             VKM_OPENGL_CHECK(glTextureStorage2D(m_id, mips, internalFormat, size, size));
@@ -71,19 +66,12 @@ class TextureCube : public Object {
             bindTextureUnit(slot, m_id);
         }
 
-        int size() const { return m_size; }
-        int mips() const { return m_mips; }
-
     private:
         void release() noexcept {
             if (m_id == 0) return;
             deleteTextures(1, &m_id);
             m_id = 0;
         }
-
-    private:
-        int m_size = 0;
-        int m_mips = 1;
 };
 
 } // namespace Vkm::OpenGL

@@ -107,21 +107,20 @@ void Texture2DArray::clear(uint32_t level, GLenum format, GLenum type, const voi
     VKM_OPENGL_CHECK(glClearTexImage(m_id, static_cast<GLint>(level), format, type, value));
 }
 
-void Texture2DArray::copyLayer(const Texture2DArray& from, uint32_t layer, uint32_t level) const {
-    const auto width  = static_cast<GLsizei>(std::max(m_params.width >> level, 1u));
-    const auto height = static_cast<GLsizei>(std::max(m_params.height >> level, 1u));
+void Texture2DArray::copyLayer(const Texture2DArray& from, uint32_t layer) const {
+    const auto width  = static_cast<GLsizei>(m_params.width);
+    const auto height = static_cast<GLsizei>(m_params.height);
     const auto at     = static_cast<GLint>(layer);
-    const auto mip    = static_cast<GLint>(level);
     VKM_OPENGL_CHECK(glCopyImageSubData(
         from.m_id,
         GL_TEXTURE_2D_ARRAY,
-        mip,
+        0,
         0,
         0,
         at,
         m_id,
         GL_TEXTURE_2D_ARRAY,
-        mip,
+        0,
         0,
         0,
         at,

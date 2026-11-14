@@ -23,7 +23,6 @@ class Sampler : public Object {
             TextureCompare   compare   = TextureCompare::None;
         };
 
-        Sampler();
         explicit Sampler(const Params& params);
         ~Sampler() override;
 
@@ -43,36 +42,6 @@ class Sampler : public Object {
          * @param slot Texture unit index.
          */
         void bindSlot(uint32_t slot) const;
-
-        /**
-         * @brief Unbind any sampler from a texture unit.
-         *
-         * Static because clearing a unit does not need an instance - the unit
-         * reverts to sampling with the texture's own parameters.
-         *
-         * @param slot Texture unit index.
-         */
-        static void unbindSlot(uint32_t slot);
-
-        /**
-         * @brief Replace the wrap/filter parameters on the live GL object.
-         *
-         * @param params New parameter set, applied immediately.
-         */
-        void setParams(const Params& params);
-
-        /**
-         * @brief The parameters this sampler currently applies.
-         *
-         * @return Reference to the stored parameter set.
-         */
-        const Params& getParams() const { return m_params; }
-
-    private:
-        void applyParams();
-
-    private:
-        Params m_params;
 };
 
 } // namespace Vkm::OpenGL

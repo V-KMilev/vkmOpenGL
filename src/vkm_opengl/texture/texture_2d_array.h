@@ -81,16 +81,15 @@ class Texture2DArray : public Object {
         void clear(uint32_t level, GLenum format, GLenum type, const void* value) const;
 
         /**
-         * @brief Copy one layer of one level of @p from over the same of this one, texel for texel.
+         * @brief Copy one layer of level 0 of @p from over the same of this one, texel for texel.
          *
          * No framebuffer is involved: a texture first attached to one may be laid out again whole
          * on the spot, which stalls the CPU for as long as that takes.
          *
          * @param from  An array of the same size and format.
          * @param layer The layer, in both.
-         * @param level The level, in both.
          */
-        void copyLayer(const Texture2DArray& from, uint32_t layer, uint32_t level = 0) const;
+        void copyLayer(const Texture2DArray& from, uint32_t layer) const;
 
         /// Build every level below 0 of every layer from level 0.
         void generateMipmaps() const;

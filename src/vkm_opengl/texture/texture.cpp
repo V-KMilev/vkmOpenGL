@@ -311,13 +311,6 @@ void Texture2D::setMaxAnisotropy(float maxAnisotropy) {
     applyAnisotropy(m_id, m_params);
 }
 
-void Texture2D::setWrap(TextureWrap s, TextureWrap t) {
-    m_params.wrapS = s;
-    m_params.wrapT = t;
-    VKM_OPENGL_CHECK(glTextureParameteri(m_id, GL_TEXTURE_WRAP_S, static_cast<GLint>(toGLenum(s))));
-    VKM_OPENGL_CHECK(glTextureParameteri(m_id, GL_TEXTURE_WRAP_T, static_cast<GLint>(toGLenum(t))));
-}
-
 void Texture2D::applyParameters() const {
     const auto set = [this](GLenum name, GLenum value) {
         VKM_OPENGL_CHECK(glTextureParameteri(m_id, name, static_cast<GLint>(value)));

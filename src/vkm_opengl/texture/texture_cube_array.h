@@ -32,15 +32,14 @@ class TextureCubeArray : public Object {
 
         TextureCubeArray(TextureCubeArray && other) noexcept
             : Object(std::move(other))
-            , m_size(other.m_size), m_mips(other.m_mips), m_capacity(other.m_capacity) {}
+            , m_size(other.m_size), m_mips(other.m_mips) {}
 
         TextureCubeArray& operator=(TextureCubeArray && other) noexcept {
             if (this != &other) {
                 release();
                 Object::operator=(std::move(other));
-                m_size     = other.m_size;
-                m_mips     = other.m_mips;
-                m_capacity = other.m_capacity;
+                m_size = other.m_size;
+                m_mips = other.m_mips;
             }
             return *this;
         }
@@ -56,9 +55,8 @@ class TextureCubeArray : public Object {
          */
         void create(int size, int mips, int capacity, GLenum internalFormat) {
             release();
-            m_size     = size;
-            m_mips     = mips;
-            m_capacity = capacity;
+            m_size = size;
+            m_mips = mips;
 
             VKM_OPENGL_CHECK(glCreateTextures(GL_TEXTURE_CUBE_MAP_ARRAY, 1, &m_id));
             VKM_OPENGL_CHECK(glTextureStorage3D(m_id, mips, internalFormat, size, size, capacity * 6));
@@ -77,8 +75,8 @@ class TextureCubeArray : public Object {
         /**
          * @brief Copy cube @p from, every face of every level, over cube @p to.
          *
-         * @param from The cube copied, below capacity().
-         * @param to   The cube overwritten, below capacity().
+         * @param from The cube copied, below the capacity create() was given.
+         * @param to   The cube overwritten, below it too.
          */
         void copyCube(int from, int to) const {
             for (int mip = 0; mip < m_mips; ++mip) {
@@ -103,10 +101,6 @@ class TextureCubeArray : public Object {
             }
         }
 
-        int size()     const { return m_size; }
-        int mips()     const { return m_mips; }
-        int capacity() const { return m_capacity; }
-
     private:
         void release() noexcept {
             if (m_id == 0) return;
@@ -115,9 +109,8 @@ class TextureCubeArray : public Object {
         }
 
     private:
-        int m_size     = 0;
-        int m_mips     = 1;
-        int m_capacity = 0;
+        int m_size = 0;
+        int m_mips = 1;
 };
 
 } // namespace Vkm::OpenGL

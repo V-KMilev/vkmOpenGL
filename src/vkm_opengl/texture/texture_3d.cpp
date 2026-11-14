@@ -57,9 +57,9 @@ void Texture3D::bindSlot(uint32_t slot) const {
     bindTextureUnit(slot, m_id);
 }
 
-void Texture3D::bindImage(uint32_t unit, GLenum access, int32_t level) const {
+void Texture3D::bindImage(uint32_t unit, GLenum access) const {
     // Layered = GL_TRUE exposes the whole volume as an image3D to the shader.
-    VKM_OPENGL_CHECK(glBindImageTexture(unit, m_id, level, GL_TRUE, 0, access, m_params.internalFormat));
+    VKM_OPENGL_CHECK(glBindImageTexture(unit, m_id, 0, GL_TRUE, 0, access, m_params.internalFormat));
 }
 
 void Texture3D::upload(const void* pixels) const {
@@ -76,11 +76,6 @@ void Texture3D::upload(const void* pixels) const {
         m_params.type,
         pixels
     ));
-}
-
-void Texture3D::download(void* pixels, uint32_t bytes) const {
-    const auto size = static_cast<GLsizei>(bytes);
-    VKM_OPENGL_CHECK(glGetTextureImage(m_id, 0, m_params.format, m_params.type, size, pixels));
 }
 
 } // namespace Vkm::OpenGL
