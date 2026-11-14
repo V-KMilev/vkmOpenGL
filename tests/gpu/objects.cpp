@@ -47,9 +47,8 @@ TEST("maxTextureSize is the driver's own GL_MAX_TEXTURE_SIZE") {
     CHECK(context.maxTextureSize() == driver);
 }
 
-TEST("enableGLDebugLogging turns the driver's debug output on, synchronous when asked") {
+TEST("enableGLDebugLogging turns the driver's debug output on") {
     Vkm::Test::requireContext();
-    enableGLDebugLogging(true);
+    enableGLDebugLogging();
     CHECK(glIsEnabled(GL_DEBUG_OUTPUT) == GL_TRUE);
-    CHECK(glIsEnabled(GL_DEBUG_OUTPUT_SYNCHRONOUS) == GL_TRUE);
 }

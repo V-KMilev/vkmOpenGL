@@ -41,12 +41,6 @@ class Object {
         uint32_t getID() const;
 
         /**
-         * @brief Check whether the GL object holds a valid OpenGL id.
-         * @return True if the object is valid, false otherwise.
-         */
-        bool isValid() const;
-
-        /**
          * @brief Set a debug label for this OpenGL object, if supported.
          * @param label Null-terminated C-string to set as the label.
          */

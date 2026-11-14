@@ -29,7 +29,6 @@ Object& Object::operator=(Object && other) noexcept {
 }
 
 uint32_t Object::getID() const { return m_id; }
-bool Object::isValid() const { return m_id != 0; }
 
 void Object::setLabel(const char* label) {
     VKM_OPENGL_CHECK(glObjectLabel(m_identifier, m_id, -1, label));

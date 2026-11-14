@@ -6,11 +6,10 @@ namespace Vkm::OpenGL {
 /**
  * @brief Enable OpenGL debug output with a default callback that logs messages.
  *
- * Call after load().
- *
- * @param synchronous If true, enables GL_DEBUG_OUTPUT_SYNCHRONOUS for immediate callbacks.
+ * Call after load(). The driver reports asynchronously: a message may come after the call that
+ * caused it, and from a thread of the driver's own.
  */
-void enableGLDebugLogging(bool synchronous = true);
+void enableGLDebugLogging();
 
 } // namespace Vkm::OpenGL
 

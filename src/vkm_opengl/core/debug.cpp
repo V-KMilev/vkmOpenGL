@@ -82,14 +82,10 @@ namespace {
 
 } // namespace
 
-void enableGLDebugLogging(bool synchronous) {
+void enableGLDebugLogging() {
     VKM_OPENGL_CHECK(glEnable(GL_DEBUG_OUTPUT));
-    if (synchronous) {
-        VKM_OPENGL_CHECK(glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS));
-    }
-
     VKM_OPENGL_CHECK(glDebugMessageCallback(glDebugCallback, nullptr));
-    LOG_INFO("GL debug output enabled%s", synchronous ? " (synchronous)" : "");
+    LOG_INFO("GL debug output enabled");
 }
 
 } // namespace Vkm::OpenGL
