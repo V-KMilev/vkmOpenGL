@@ -8,21 +8,18 @@ void Context::setClearColor(const glm::vec4& color) {
     m_clearColor = color;
 }
 
-void Context::clearColor() const {
-    VKM_OPENGL_CHECK(glClearColor(m_clearColor[0], m_clearColor[1], m_clearColor[2], m_clearColor[3]));
-}
+void Context::clear(bool color, bool depth, float depthValue) const {
+    const glm::vec4& rgba = m_clearColor;
 
-void Context::clear(bool color, bool depth, bool stencil, float depthValue) const {
     // A color clear applies the stored clear color first - setClearColor
     // alone never touches GL, so set + clear always clears with the caller's
     // color instead of whatever glClearColor state was left behind.
-    if (color) clearColor();
+    if (color) VKM_OPENGL_CHECK(glClearColor(rgba[0], rgba[1], rgba[2], rgba[3]));
     if (depth) VKM_OPENGL_CHECK(glClearDepthf(depthValue));
 
     GLbitfield mask = 0;
-    if (color)   mask |= GL_COLOR_BUFFER_BIT;
-    if (depth)   mask |= GL_DEPTH_BUFFER_BIT;
-    if (stencil) mask |= GL_STENCIL_BUFFER_BIT;
+    if (color) mask |= GL_COLOR_BUFFER_BIT;
+    if (depth) mask |= GL_DEPTH_BUFFER_BIT;
 
     VKM_OPENGL_CHECK(glClear(mask));
 }
@@ -101,45 +98,6 @@ void Context::setBlendFunc(GLenum src, GLenum dst) {
     VKM_OPENGL_CHECK(glBlendFunc(src, dst));
 }
 
-void Context::setBlendEquation(GLenum mode) {
-    if (m_state.blend.equation == mode) return;
-    m_state.blend.equation = mode;
-    VKM_OPENGL_CHECK(glBlendEquation(mode));
-}
-
-
-void Context::setStencilTest(bool enable) {
-    if (m_state.stencil.enabled == enable) return;
-    m_state.stencil.enabled = enable;
-
-    if (enable) { VKM_OPENGL_CHECK(glEnable(GL_STENCIL_TEST)); }
-    else        { VKM_OPENGL_CHECK(glDisable(GL_STENCIL_TEST)); }
-}
-
-void Context::setStencilFunc(GLenum func, GLint ref, GLuint mask) {
-    auto& s = m_state.stencil;
-    if (s.func == func && s.ref == ref && s.funcMask == mask) return;
-    s.func     = func;
-    s.ref      = ref;
-    s.funcMask = mask;
-    VKM_OPENGL_CHECK(glStencilFunc(func, ref, mask));
-}
-
-void Context::setStencilOp(GLenum sfail, GLenum dpfail, GLenum dppass) {
-    auto& s = m_state.stencil;
-    if (s.sfail == sfail && s.dpfail == dpfail && s.dppass == dppass) return;
-    s.sfail  = sfail;
-    s.dpfail = dpfail;
-    s.dppass = dppass;
-    VKM_OPENGL_CHECK(glStencilOp(sfail, dpfail, dppass));
-}
-
-void Context::setStencilMask(GLuint mask) {
-    if (m_state.stencil.writeMask == mask) return;
-    m_state.stencil.writeMask = mask;
-    VKM_OPENGL_CHECK(glStencilMask(mask));
-}
-
 void Context::setColorMask(bool r, bool g, bool b, bool a) {
     auto& c = m_state.colorMask;
     if (!m_state.colorMaskSplit && c.r == r && c.g == g && c.b == b && c.a == a) return;
@@ -165,9 +123,6 @@ void Context::setColorMask(uint32_t drawBuffer, bool r, bool g, bool b, bool a) 
 }
 
 namespace {
-
-constexpr uint32_t CLIP_PLANES = 8;  ///< User clip planes setDefaultState() resets: the least
-                                     ///< GL_MAX_CLIP_DISTANCES can be.
 
 // Turn @p capability on or off when @p cached says otherwise, and remember it.
 void toggle(bool& cached, GLenum capability, bool enable) {
@@ -201,13 +156,6 @@ void Context::setDepthClamp(bool enable) {
     toggle(m_state.depthClamp, GL_DEPTH_CLAMP, enable);
 }
 
-void Context::setClipDistance(uint32_t plane, bool enable) {
-    const uint32_t bit = 1u << plane;
-    bool on = (m_state.clipDistances & bit) != 0;
-    toggle(on, GL_CLIP_DISTANCE0 + plane, enable);
-    m_state.clipDistances = on ? (m_state.clipDistances | bit) : (m_state.clipDistances & ~bit);
-}
-
 void Context::setClipControl(GLenum origin, GLenum depth) const {
     VKM_OPENGL_CHECK(glClipControl(origin, depth));
 }
@@ -222,10 +170,10 @@ void Context::setSeamlessCubes(bool enable) const {
     else        { VKM_OPENGL_CHECK(glDisable(GL_TEXTURE_CUBE_MAP_SEAMLESS)); }
 }
 
-void Context::setPolygonMode(GLenum face, GLenum mode) {
-    // Track only the common case (FRONT_AND_BACK) so callers can still set per-face if desired
-    if (face == GL_FRONT_AND_BACK) m_state.polygonMode = mode;
-    VKM_OPENGL_CHECK(glPolygonMode(face, mode));
+void Context::setPolygonMode(GLenum mode) {
+    if (m_state.polygonMode == mode) return;
+    m_state.polygonMode = mode;
+    VKM_OPENGL_CHECK(glPolygonMode(GL_FRONT_AND_BACK, mode));
 }
 
 void Context::setDefaultState() {
@@ -239,33 +187,17 @@ void Context::setDefaultState() {
 
     setBlending(false);
     setBlendFunc(GL_ONE, GL_ZERO);
-    setBlendEquation(GL_FUNC_ADD);
-
-    setStencilTest(false);
-    setStencilFunc(GL_ALWAYS, 0, 0xFFFFFFFFu);
-    setStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
-    setStencilMask(0xFFFFFFFFu);
 
     setColorMask(true, true, true, true);
     enableScissor(false);
 
-    setPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    setPolygonMode(GL_FILL);
 
     setAlphaToCoverage(false);
     setPolygonOffset(GL_FILL, false);
     setPolygonOffset(GL_LINE, false);
     setPolygonOffset(GL_POINT, false);
     setDepthClamp(false);
-    for (uint32_t plane = 0; plane < CLIP_PLANES; ++plane) setClipDistance(plane, false);
-}
-
-int32_t Context::maxSamples() const {
-    if (m_maxSamples < 0) {
-        GLint samples = 1;
-        VKM_OPENGL_CHECK(glGetIntegerv(GL_MAX_SAMPLES, &samples));
-        m_maxSamples = samples > 0 ? samples : 1;
-    }
-    return m_maxSamples;
 }
 
 int32_t Context::maxTextureSize() const {

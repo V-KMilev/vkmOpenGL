@@ -21,8 +21,8 @@ After `load()`, every call is under `VKM_OPENGL_CHECK`.
 A bind of what is bound already costs the driver as much as a new one, so the library remembers what
 it bound, and skips a bind that changes nothing:
 
-- **`Context`** caches the raster state it sets (depth, blend, cull, stencil, masks, polygon mode and
-  offset). The viewport and the scissor rectangle pass straight through, as other code sets them too.
+- **`Context`** caches the raster state it sets (depth, blend, cull, masks, polygon mode and offset).
+  The viewport and the scissor rectangle pass straight through, as other code sets them too.
 - **Texture units:** every texture binds through `bindTextureUnit` and deletes through
   `deleteTextures`, which forgets it on every unit it held.
 - **Buffers:** every buffer deletes through `deleteBuffer`, which forgets it wherever a binding to it
