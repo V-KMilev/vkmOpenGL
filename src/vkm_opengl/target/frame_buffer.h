@@ -25,16 +25,14 @@ class FrameBuffer : public Object {
 
     public:
         /**
-         * @brief Bind the framebuffer object.
-         * @param target GL_DRAW_FRAMEBUFFER or GL_READ_FRAMEBUFFER; GL_NONE binds both.
+         * @brief Bind the framebuffer object, for drawing and reading both.
          */
-        void bind(GLenum target = GL_NONE) const;
+        void bind() const;
 
         /**
-         * @brief Unbind the framebuffer object.
-         * @param target GL_DRAW_FRAMEBUFFER or GL_READ_FRAMEBUFFER; GL_NONE unbinds both.
+         * @brief Unbind the framebuffer object, for drawing and reading both.
          */
-        void unbind(GLenum target = GL_NONE) const;
+        void unbind() const;
 
         /**
          * @brief Bind the default framebuffer (the window backbuffer, FBO 0).
@@ -45,12 +43,11 @@ class FrameBuffer : public Object {
         static void bindDefault();
 
         /**
-         * @brief Attach a texture level: a 2D texture, multisample or not, or a whole layered one.
+         * @brief Attach a texture's level 0: a 2D texture, multisample or not, or a whole layered one.
          * @param attachment Framebuffer attachment (e.g., GL_COLOR_ATTACHMENT0).
          * @param textureID  GL texture object ID; 0 detaches.
-         * @param level      Mipmap level (default 0).
          */
-        void attachTexture(GLenum attachment, uint32_t textureID, int32_t level = 0);
+        void attachTexture(GLenum attachment, uint32_t textureID);
 
         /**
          * @brief Attach one layer of a texture level: an array's layer, a cube's face, a cube
@@ -114,16 +111,11 @@ class FrameBuffer : public Object {
         void clearDepth(float depth) const;
 
         /**
-         * @brief Check if the framebuffer is complete and ready for rendering.
+         * @brief Check if the framebuffer is complete and ready for rendering, logging the status
+         *        glCheckNamedFramebufferStatus gives when it is not.
          * @return True if complete; false otherwise.
          */
         bool isComplete() const;
-
-        /**
-         * @brief Perform an OpenGL status check for the framebuffer.
-         * @return The GL status code from glCheckNamedFramebufferStatus.
-         */
-        GLenum checkStatus() const;
 
         /**
          * @brief Blit (copy) a rectangle of pixels from one framebuffer to another.

@@ -32,12 +32,12 @@ void FrameBuffer::release() noexcept {
     m_id = 0;
 }
 
-void FrameBuffer::bind(GLenum target) const {
-    VKM_OPENGL_CHECK(glBindFramebuffer(target == GL_NONE ? GL_FRAMEBUFFER : target, m_id));
+void FrameBuffer::bind() const {
+    VKM_OPENGL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, m_id));
 }
 
-void FrameBuffer::unbind(GLenum target) const {
-    VKM_OPENGL_CHECK(glBindFramebuffer(target == GL_NONE ? GL_FRAMEBUFFER : target, 0));
+void FrameBuffer::unbind() const {
+    VKM_OPENGL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, 0));
 }
 
 void FrameBuffer::bindDefault() {
@@ -56,8 +56,8 @@ void FrameBuffer::clearDepth(float depth) const {
     VKM_OPENGL_CHECK(glClearNamedFramebufferfv(m_id, GL_DEPTH, 0, &depth));
 }
 
-void FrameBuffer::attachTexture(GLenum attachment, uint32_t textureID, int32_t level) {
-    VKM_OPENGL_CHECK(glNamedFramebufferTexture(m_id, attachment, textureID, level));
+void FrameBuffer::attachTexture(GLenum attachment, uint32_t textureID) {
+    VKM_OPENGL_CHECK(glNamedFramebufferTexture(m_id, attachment, textureID, 0));
 }
 
 void FrameBuffer::attachLayer(GLenum attachment, uint32_t textureID, int32_t level, int32_t layer) {
@@ -81,10 +81,6 @@ void FrameBuffer::setReadBuffer(GLenum attachment) {
 }
 
 bool FrameBuffer::isComplete() const {
-    return checkStatus() == GL_FRAMEBUFFER_COMPLETE;
-}
-
-GLenum FrameBuffer::checkStatus() const {
     GLenum status = GL_NONE;
     VKM_OPENGL_CHECK(status = glCheckNamedFramebufferStatus(m_id, GL_FRAMEBUFFER));
 
@@ -103,7 +99,7 @@ GLenum FrameBuffer::checkStatus() const {
         LOG_ERROR("Framebuffer [ID:%u] incomplete: %s", m_id, errorStr);
     }
 
-    return status;
+    return status == GL_FRAMEBUFFER_COMPLETE;
 }
 
 void FrameBuffer::blit(
