@@ -93,7 +93,7 @@ if(CMAKE_NM)
     )
     add_test(NAME "vkm_opengl: GL's error queue is read after a call only where VKM_OPENGL_CHECKS is on, whatever else is"
         COMMAND ${CMAKE_COMMAND} "-DOBJECTS=$<JOIN:$<TARGET_OBJECTS:${PROJECT_NAME}>,|>" -DNM=${CMAKE_NM}
-            -DCHECKS=${VKM_OPENGL_CHECKS} -P ${CMAKE_CURRENT_SOURCE_DIR}/error_check.cmake
+            -DCHECKS=$<BOOL:${VKM_OPENGL_CHECKS}> -P ${CMAKE_CURRENT_SOURCE_DIR}/error_check.cmake
     )
 endif()
 set_tests_properties(${_vkm_opengl_checks} PROPERTIES LABELS vkm_opengl)

@@ -60,7 +60,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 # Debug features follow flags, each off unless the consumer turns it on; neither
 # follows NDEBUG.
 option(VKM_OPENGL_ASSERTS "Keep the library's VKM_ASSERTs on whatever the build type" OFF)
-option(VKM_OPENGL_CHECKS  "Read GL's error queue after every call (VKM_OPENGL_CHECK)" OFF)
+option(VKM_OPENGL_CHECKS  "Read GL's error queue after every call (VKM_OPENGL_CHECK); may be a generator expression" OFF)
 
 # VKM_ASSERT keys on NDEBUG, which a RelWithDebInfo or Release build defines: on,
 # the library's own sources compile without it.
@@ -69,10 +69,9 @@ if(VKM_OPENGL_ASSERTS)
 endif()
 
 # Public: the headers' inline calls are checked too, and every file that expands
-# them must expand them alike.
-if(VKM_OPENGL_CHECKS)
-    target_compile_definitions(${PROJECT_NAME} PUBLIC VKM_OPENGL_CHECKS)
-endif()
+# them must expand them alike. Read as a generator expression, so a multi-config
+# consumer can turn the checks on per configuration: $<CONFIG:Debug>.
+target_compile_definitions(${PROJECT_NAME} PUBLIC $<$<BOOL:${VKM_OPENGL_CHECKS}>:VKM_OPENGL_CHECKS>)
 
 # Its log lines say whose they are.
 target_compile_definitions(${PROJECT_NAME} PRIVATE
