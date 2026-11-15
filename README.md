@@ -57,7 +57,10 @@ CMake 3.25 or above, a C++17 compiler and a driver of the OpenGL that
 Add it as a submodule and `add_subdirectory` it. It links OpenGL, glew, glm and
 `vkm_log`, and vendors only glew: the consuming project adds the `glm` and
 `vkm_log` targets first, as it uses them itself, and the build stops with the
-reason when one is missing. It needs no window library: the consumer makes a
+reason when one is missing. glew's repository holds none of the sources it
+generates, so the first configure downloads glew's 2.3.0 release into
+`modules/glew` (`modules/CMakeLists.txt`), and a consumer that has a `glew`
+target already is linked to that instead. It needs no window library: the consumer makes a
 context current, from a window or from EGL, and calls `Vkm::OpenGL::load()`
 before the first call; it answers whether OpenGL loaded and why not.
 

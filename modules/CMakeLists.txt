@@ -19,7 +19,8 @@ endforeach()
 message("[VKM_OPENGL] Modules:")
 message("\t- glew | Path: ${GLEW_DIR} (https://github.com/nigels-com/glew)")
 
-# GLEW - Auto-download pre-built release if needed
+# glew's repository holds none of the sources it generates (glew.c, glew.h), so its release, which
+# does, is downloaded into the submodule's folder at the first configure.
 if (TARGET glew)
   message(STATUS "Target glew exists, will link to it.")
 else()
