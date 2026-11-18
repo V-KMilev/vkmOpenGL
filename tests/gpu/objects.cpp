@@ -9,12 +9,27 @@
 #include "vkm_opengl/buffer/readback_buffer.h"
 #include "vkm_opengl/core/context.h"
 #include "vkm_opengl/core/debug.h"
+#include "vkm_opengl/core/error_handle.h"
 #include "vkm_opengl/texture/texture_3d.h"
 
 #include "gpu/context.h"
 #include "harness/check.h"
+#include "harness/scratch.h"
 
 using namespace Vkm::OpenGL;
+
+TEST("with the checks on, VKM_OPENGL_CHECK runs its call once, and not at all under a branch not taken") {
+#ifndef VKM_OPENGL_CHECKS
+    Vkm::Test::skip("VKM_OPENGL_CHECKS is off: core.cpp checks the macro with no context");
+#else
+    Vkm::Test::requireContext();
+    int calls = 0;
+    VKM_OPENGL_CHECK(++calls);
+    CHECK(calls == 1);
+    if (calls == 0) VKM_OPENGL_CHECK(++calls);
+    CHECK(calls == 1);
+#endif
+}
 
 TEST("a readback buffer's delete is counted as every buffer's is") {
     Vkm::Test::requireContext();
